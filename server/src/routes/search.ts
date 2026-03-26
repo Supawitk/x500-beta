@@ -1,9 +1,7 @@
 import { Elysia, t } from "elysia";
-import YahooFinance from "yahoo-finance2";
+import yf from "../services/yfClient";
 import { getAllStocks } from "../services/stockService";
 import { getCache, setCache } from "../services/cache";
-
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 export const searchRoutes = new Elysia({ prefix: "/api" })
   .get("/search", async ({ query }) => {

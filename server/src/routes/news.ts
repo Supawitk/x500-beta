@@ -1,10 +1,8 @@
 import { Elysia } from "elysia";
-import YahooFinance from "yahoo-finance2";
+import yf from "../services/yfClient";
 import { getCache, setCache } from "../services/cache";
 import { fetchMultiSourceNews, adaptYahooNews } from "../services/multiNews";
 import { fetchSECFilings } from "../services/secEdgar";
-
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 300_000; // 5 min
 
 function safeDate(d: any): string | null {

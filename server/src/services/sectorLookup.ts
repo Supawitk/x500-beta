@@ -1,7 +1,5 @@
-import YahooFinance from "yahoo-finance2";
+import yf from "./yfClient";
 import { getCache, setCache } from "./cache";
-
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 3600_000; // 1 hour - sectors don't change often
 
 interface SectorInfo {

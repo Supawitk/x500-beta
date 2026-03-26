@@ -1,4 +1,4 @@
-import YahooFinance from "yahoo-finance2";
+import yf from "./yfClient";
 import type { StockQuote } from "../types/stock";
 import {
   calcGrahamNumber, calcIntrinsicValue,
@@ -6,8 +6,6 @@ import {
 } from "../utils/calculations";
 import { getCache, setCache } from "./cache";
 import { SECTOR_MAP, INDUSTRY_MAP } from "../config/symbols";
-
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 60_000; // 1 minute for full S&P 500 list
 
 function resolveSectorInfo(symbol: string) {

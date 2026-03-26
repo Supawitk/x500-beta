@@ -9,13 +9,11 @@
  * 6. Accumulates data in a persistent JSON corpus for auto-training
  */
 
-import YahooFinance from "yahoo-finance2";
+import yf from "./yfClient";
 import { fetchHistory, type OHLCV } from "./historical";
 import { getCache, setCache } from "./cache";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
-
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface NewsEntry {

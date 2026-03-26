@@ -1,8 +1,6 @@
 import { Elysia } from "elysia";
-import YahooFinance from "yahoo-finance2";
+import yf from "../services/yfClient";
 import { getCache, setCache } from "../services/cache";
-
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 180_000; // 3 min
 
 function round2(n: number | null | undefined): number | null {
