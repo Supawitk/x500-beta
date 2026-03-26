@@ -3882,273 +3882,456 @@ select option {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — comprehensive overrides
+   MOBILE INTERFACE — Compact redesign for phones & tablets
+   Same theme, different scale. Every element constrained to viewport.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Global overflow prevention ─────────────────── */
-html { overflow-x: hidden; }
-body { overflow-x: hidden; width: 100%; }
-.app { overflow-x: hidden; width: 100%; }
-.main { overflow-x: hidden; max-width: 100vw; }
-.page-transition { overflow-x: hidden; }
-.card { overflow: hidden; max-width: 100%; }
-.analysis-page { overflow-x: hidden; max-width: 100vw; }
-.card > * { max-width: 100%; }
-img, svg, canvas, video { max-width: 100%; height: auto; }
-.recharts-responsive-container { max-width: 100% !important; }
+/* ── Global: prevent ANY horizontal overflow at all sizes ───────────────── */
+html, body, .app { overflow-x: hidden; width: 100%; }
+.main, .page-transition, .analysis-page,
+.dashboard, .compare-page, .scr-page, .wl-page { overflow-x: hidden; max-width: 100vw; }
+.card { overflow: hidden; max-width: 100%; word-break: break-word; }
+.card > * { max-width: 100%; min-width: 0; }
+img, svg:not(.lucide), canvas, video { max-width: 100%; height: auto; }
+.recharts-responsive-container,
 .recharts-wrapper { max-width: 100% !important; overflow: hidden !important; }
 .tv-lightweight-charts { max-width: 100% !important; overflow: hidden !important; }
 
-/* ── Tablet (≤ 768px) ─────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   TABLET — compact layout, still 2-col where useful
+   ══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Header */
-  .header { padding: 12px 16px; }
+  :root { --radius: 8px; }
+
+  /* ── Shell ─────────────────────────────── */
+  .header { padding: 10px 14px; position: sticky; top: 0; z-index: 100; }
   .header-left h1 { font-size: 15px; }
   .header-time { display: none; }
-
-  /* Tab navigation — horizontal scroll */
   .tab-nav {
-    padding: 6px 12px;
-    gap: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    padding: 4px 10px; gap: 0;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; position: sticky; top: 48px; z-index: 99;
   }
   .tab-nav::-webkit-scrollbar { display: none; }
-  .tab-btn { padding: 7px 14px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+  .tab-btn { padding: 6px 12px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+  .main { padding: 10px; }
 
-  /* Main content */
-  .main { padding: 12px; }
+  /* ── Cards — tighter everywhere ────────── */
+  .card { padding: 12px; }
+  .card-title { font-size: 12px; margin-bottom: 10px; letter-spacing: 0.4px; }
 
-  /* Cards */
-  .card { padding: 14px; }
-  .card-title { font-size: 14px; }
+  /* ── Dashboard ─────────────────────────── */
+  .summary-grid-wide { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .summary-icon { width: 32px; height: 32px; border-radius: 8px; }
+  .summary-value { font-size: 15px; }
+  .summary-label { font-size: 10px; }
+  .indices-bar { padding: 6px 10px; gap: 8px; margin-bottom: 10px; }
+  .index-item { padding: 2px 8px; font-size: 12px; }
+  .movers-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px; }
+  .mover-row { grid-template-columns: 50px 1fr 60px 60px; font-size: 11px; padding: 5px 0; }
+  .charts-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px; }
+  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; }
+  .heatmap-cell { padding: 8px 5px; }
+  .heatmap-change { font-size: 14px; }
+  .heatmap-sector { font-size: 10px; }
 
-  /* Analysis page */
-  .analysis-top { grid-template-columns: 1fr; }
-  .analysis-toolbar { flex-direction: column; gap: 10px; }
+  /* ── Analysis ──────────────────────────── */
+  .analysis-page { gap: 10px; }
+  .analysis-top { grid-template-columns: 1fr; gap: 10px; }
+  .analysis-toolbar { flex-direction: column; gap: 8px; }
   .stock-search { max-width: 100%; }
-  .sih-symbol { font-size: 18px; }
-  .sih-price { font-size: 20px; }
-
-  /* Support / Resistance */
-  .sr-grid { grid-template-columns: 1fr; }
-
-  /* Portfolio builder */
-  .pb-layout { grid-template-columns: 1fr; }
-
-  /* Prediction tabs — scrollable */
-  .pd-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .pd-tabs::-webkit-scrollbar { display: none; }
-  .pd-tab { padding: 7px 10px; font-size: 11px; }
-
-  /* News tabs — scrollable */
-  .nws-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-wrap: nowrap; }
-  .nws-tabs::-webkit-scrollbar { display: none; }
-  .nws-tab-btn { flex-shrink: 0; font-size: 11px; padding: 5px 10px; }
-
-  /* Watchlist */
-  .wl-grid { grid-template-columns: 1fr; }
-
-  /* Heatmap */
-  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-
-  /* Comparison page */
-  .cmp-grid { grid-template-columns: 1fr; }
-
-  /* Touch-friendly buttons and inputs */
-  button, select, input { min-height: 36px; }
-  select { font-size: 13px; }
-}
-
-/* ── Mobile (≤ 480px) ─────────────────────────────── */
-@media (max-width: 480px) {
-  body { font-size: 13px; }
-
-  /* Global mobile overflow fix */
-  * { max-width: 100vw; }
-  .main { padding: 8px; width: 100%; }
-  .card { padding: 10px; border-radius: 8px; word-break: break-word; overflow: hidden; }
-  .card > div, .card > section { overflow-x: auto; max-width: 100%; }
-
-  /* Header compact */
-  .header { padding: 10px 12px; flex-wrap: wrap; gap: 6px; }
-  .header-left h1 { font-size: 14px; }
-  .header-left svg { width: 18px; height: 18px; }
-
-  /* Tabs — smaller, scrollable */
-  .tab-nav { padding: 6px 8px; }
-  .tab-btn { padding: 6px 10px; font-size: 12px; }
-
-  /* Cards */
-  .card-title { font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
-
-  /* Stock info header */
-  .sih-container { padding: 10px 12px; overflow: hidden; }
-  .sih-symbol { font-size: 16px; }
-  .sih-price { font-size: 18px; }
-  .sih-price-row { flex-wrap: wrap; gap: 6px; }
-  .sih-signals-row { flex-wrap: wrap; gap: 4px; overflow-x: auto; }
-  .sih-sig { font-size: 11px; }
-  .sih-metrics { flex-wrap: wrap; }
-
-  /* Analysis toolbar */
-  .analysis-toolbar { gap: 8px; width: 100%; }
-  .stock-search { max-width: 100%; width: 100%; }
-  .search-input-wrap { padding: 6px 10px; }
-  .period-selector { width: 100%; justify-content: center; flex-wrap: wrap; }
-  .period-btn { flex: 1; padding: 5px 6px; font-size: 11px; min-width: 0; }
-
-  /* Charts — constrain to card width */
-  .chart-container { min-height: 220px; max-width: 100%; overflow: hidden; }
-  .candlestick-container { width: 100% !important; max-width: 100% !important; overflow: hidden; }
-  .recharts-wrapper { max-width: 100% !important; }
-  .tv-lightweight-charts { max-width: 100% !important; overflow: hidden !important; }
-
-  /* Indicator grid */
+  .sih-container { padding: 10px 12px; gap: 6px; margin-bottom: 8px; }
+  .sih-symbol { font-size: 17px; }
+  .sih-price { font-size: 22px; }
+  .sih-change { font-size: 12px; }
+  .sih-metrics { gap: 3px 10px; }
+  .sih-metric { min-width: 60px; }
+  .sih-m-val { font-size: 12px; }
+  .sih-m-label { font-size: 8px; }
+  .sih-signals { font-size: 11px; gap: 4px; }
   .indicator-grid { grid-template-columns: 1fr; gap: 10px; }
+  .sr-grid { grid-template-columns: 1fr; gap: 10px; }
+  .signal-grid { gap: 6px; }
 
-  /* Summary grid */
-  .summary-grid { grid-template-columns: 1fr; gap: 8px; }
+  /* ── Charts ────────────────────────────── */
+  .candlestick-container { border-radius: 6px; }
+  .candle-legend { gap: 10px; font-size: 10px; margin-top: 4px; }
+  .chart-toggles { gap: 4px; }
+  .toggle-btn { padding: 3px 8px; font-size: 10px; }
+  .time-slider { padding: 8px 12px; }
+  .time-slider-labels { font-size: 10px; }
 
-  /* Screener */
-  .scr-grid { grid-template-columns: 1fr; }
-  .scr-grid-header { display: none; }
-  .scr-grid-body .scr-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 10px;
-    border-bottom: 1px solid var(--border);
+  /* ── Scrollable tab bars (prediction, news, earnings, compare) ── */
+  .pd-tabs, .nws-tabs, .ed-tabs, .cmp-section-tabs, .cmp-dist-tabs {
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; flex-wrap: nowrap;
   }
+  .pd-tabs::-webkit-scrollbar, .nws-tabs::-webkit-scrollbar,
+  .ed-tabs::-webkit-scrollbar, .cmp-section-tabs::-webkit-scrollbar { display: none; }
+  .pd-tab { padding: 6px 10px; font-size: 11px; }
+  .nws-tab-btn { flex-shrink: 0; font-size: 11px; padding: 4px 9px; }
+  .ed-tab-btn { padding: 5px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
+  .cmp-sec-tab { padding: 6px 10px; font-size: 12px; white-space: nowrap; flex-shrink: 0; flex: none; }
 
-  /* Heatmap */
-  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 4px; }
-  .heatmap-cell { padding: 6px 4px; font-size: 10px; }
+  /* ── News ───────────────────────────────── */
+  .nws-list, .nws-devs, .nws-research, .nws-snapshot { grid-template-columns: 1fr; }
+  .nws-list { max-height: 380px; }
+  .nws-article { padding: 6px 8px; gap: 8px; }
+  .nws-thumb { width: 50px; height: 38px; }
+  .nws-article-title { font-size: 12px; -webkit-line-clamp: 2; }
+  .nws-article-meta { font-size: 10px; gap: 5px; }
+  .nws-sec-item { padding: 6px 8px; gap: 8px; }
+  .nws-recommendation { padding: 10px 12px; gap: 10px; flex-wrap: wrap; }
+  .nws-bull-bear { flex-direction: column; gap: 8px; }
+  .nws-outlooks { gap: 6px; }
+  .nws-outlook-card { min-width: 90px; padding: 8px 10px; }
 
-  /* Sector modal — full screen on mobile */
-  .sector-modal {
-    width: 95vw; max-width: none; max-height: 85vh;
-    padding: 14px 12px;
-  }
-  .sm-pie-wrap { grid-template-columns: 1fr; }
-  .sm-stock-row { grid-template-columns: 40px 1fr 50px 45px; font-size: 11px; }
+  /* ── Weighted Signal ────────────────────── */
+  .wsig-score-block { padding: 10px 12px; margin-bottom: 10px; }
+  .wsig-score-num { font-size: 22px; }
+  .wsig-analysis-strip { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 10px; }
+  .wsig-strip-card { padding: 8px; gap: 6px; }
+  .wsig-strip-icon { width: 24px; height: 24px; }
+  .wsig-row-header { padding: 7px 10px; }
+  .wsig-label { font-size: 12px; }
+  .wsig-detail { padding: 10px 12px; }
+  .wsig-quant-badge { padding: 3px 8px; min-width: 50px; }
 
-  /* News */
-  .nws-list { grid-template-columns: 1fr; max-height: 350px; }
-  .nws-devs { grid-template-columns: 1fr; max-height: 350px; }
-  .nws-research { grid-template-columns: 1fr; }
-  .nws-snapshot { grid-template-columns: 1fr; }
-  .nws-item { padding: 8px; }
-  .nws-item-title { font-size: 12px; }
-
-  /* Prediction panels */
+  /* ── Prediction panels ─────────────────── */
   .pd-summary-row { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .pd-stat-card { padding: 8px; }
-  .pd-stat-val { font-size: 14px; }
   .pd-fib-grid { grid-template-columns: repeat(2, 1fr); }
+  .risk-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .risk-metric { padding: 5px 7px; }
+  .risk-value { font-size: 12px; }
+  .backtest-verdict { gap: 12px; padding: 10px; }
+  .forecast-legend { gap: 8px; font-size: 10px; }
 
-  /* News impact */
+  /* ── Earnings / Dividend ────────────────── */
+  .ed-highlight-row { padding: 8px 10px; font-size: 12px; }
+  .ed-drift-cell { padding: 4px 8px; min-width: 56px; font-size: 11px; }
+  .eps-history-row { grid-template-columns: 60px 1fr 1fr 1fr; gap: 4px; font-size: 11px; padding: 5px 8px; }
+  .ed-div-hist-item { padding: 4px 8px; font-size: 11px; }
+
+  /* ── Financials ─────────────────────────── */
+  .financials-grid { grid-template-columns: 1fr; }
+  .fp-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .fp-insights-grid { grid-template-columns: 1fr; }
+  .fp-metric-row { font-size: 12px; }
+  .fp-metric-val { font-size: 12px; min-width: 55px; }
+
+  /* ── Analyst ────────────────────────────── */
+  .analyst-price { font-size: 22px; }
+  .eap-grid { grid-template-columns: 1fr; }
+
+  /* ── Comparison ─────────────────────────── */
+  .compare-search-bar { flex-direction: column; }
+  .cmp-risk-stats { grid-template-columns: 1fr; }
+  .cmp-boxplot-vals { min-width: 0; font-size: 9px; }
+  .cmp-fund-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .cmp-monthly-stats { gap: 6px; }
+
+  /* ── Correlation ────────────────────────── */
+  .corr-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* ── Screener ───────────────────────────── */
+  .scr-filter-main { flex-direction: column; }
+  .scr-search-wrap { min-width: 0; }
+  .scr-advanced { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .scr-grid { grid-template-columns: 1fr; }
+  .scr-card { padding: 10px; }
+  .scr-card-price { font-size: 17px; }
+  .industry-stocks-head { display: none; }
+  .industry-stock-row { grid-template-columns: 55px 1fr 65px 60px; gap: 4px; font-size: 11px; padding: 5px 10px; }
+
+  /* ── Watchlist ──────────────────────────── */
+  .wl-grid { grid-template-columns: 1fr; gap: 10px; }
+  .wl-card { padding: 12px; }
+  .wl-toolbar { flex-direction: column; gap: 8px; }
+  .wl-card-metrics { grid-template-columns: repeat(2, 1fr); }
+  .watchlist-price { font-size: 18px; }
+
+  /* ── Portfolio ──────────────────────────── */
+  .pb-layout { grid-template-columns: 1fr; gap: 12px; }
+
+  /* ── Sector modal ──────────────────────── */
+  .sector-modal { width: 96vw; max-width: none; padding: 14px 12px; border-radius: 12px; }
+  .sm-title { font-size: 17px; }
+  .sm-pie-wrap { grid-template-columns: 1fr; }
+  .sm-stocks { grid-template-columns: 1fr; }
+  .sm-stock-row { grid-template-columns: 45px 1fr 55px 50px; font-size: 11px; }
+  .sm-scap { display: none; }
+
+  /* ── Drawing pane ──────────────────────── */
+  .drawing-toolbar { gap: 6px; padding: 6px 8px; }
+  .draw-tool-btn { padding: 4px 8px; font-size: 11px; }
+  .drawing-options { margin-left: 0; width: 100%; }
+
+  /* ── Trending ───────────────────────────── */
+  .trending-row { font-size: 12px; padding: 5px 0; }
+
+  /* ── News impact ────────────────────────── */
+  .ni-header-grid { grid-template-columns: repeat(2, 1fr); }
+  .ni-conf-bars { grid-template-columns: 1fr; }
+  .ni-pred-grid { grid-template-columns: 1fr; }
+  .ni-backtest-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── Tables ─────────────────────────────── */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* ── Touch targets ──────────────────────── */
+  button, select, input { min-height: 36px; }
+  select { font-size: 12px; }
+  .search-dropdown li { padding: 12px 14px; }
+
+  /* ── Loading / Error ────────────────────── */
+  .loading-container, .error-container, .empty-state { padding: 30px 12px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PHONE — fully single-column, maximum compactness
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  :root { --radius: 6px; --shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  body { font-size: 13px; }
+
+  /* ── Shell ─────────────────────────────── */
+  .header { padding: 8px 10px; }
+  .header-left h1 { font-size: 13px; }
+  .header-left svg { width: 16px; height: 16px; }
+  .tab-nav { padding: 3px 6px; top: 40px; }
+  .tab-btn { padding: 5px 9px; font-size: 11px; border-radius: 5px; }
+  .main { padding: 6px; }
+
+  /* ── Cards — ultra compact ─────────────── */
+  .card { padding: 8px; border-radius: 6px; }
+  .card-title { font-size: 11px; margin-bottom: 6px; }
+
+  /* ── Dashboard ─────────────────────────── */
+  .dashboard { gap: 8px; }
+  .summary-grid-wide { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
+  .summary-icon { width: 28px; height: 28px; border-radius: 6px; }
+  .summary-icon svg { width: 14px; height: 14px; }
+  .summary-value { font-size: 14px; }
+  .summary-label { font-size: 9px; }
+  .summary-sub { font-size: 10px; }
+  .indices-bar { padding: 5px 8px; gap: 6px; margin-bottom: 8px; border-radius: 6px; }
+  .index-item { font-size: 11px; padding: 2px 6px; }
+  .movers-grid { gap: 8px; }
+  .mover-row { grid-template-columns: 45px 1fr 55px 55px; font-size: 10px; padding: 4px 0; }
+  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 3px; }
+  .heatmap-cell { padding: 6px 3px; border-radius: 5px; }
+  .heatmap-change { font-size: 13px; }
+  .heatmap-sector { font-size: 9px; }
+  .heatmap-count { font-size: 9px; }
+  .heatmap-minmax { display: none; }
+  .charts-grid { gap: 8px; margin-bottom: 8px; }
+
+  /* ── Analysis ──────────────────────────── */
+  .analysis-page { gap: 8px; }
+  .analysis-toolbar { gap: 6px; }
+  .stock-search { width: 100%; }
+  .search-input-wrap { padding: 5px 8px; border-radius: 6px; }
+  .search-input-wrap input { font-size: 13px; }
+  .period-selector { width: 100%; justify-content: stretch; }
+  .period-btn { flex: 1; padding: 5px 4px; font-size: 10px; text-align: center; min-width: 0; }
+  .sih-container { padding: 8px 10px; gap: 4px; margin-bottom: 6px; border-radius: 6px; }
+  .sih-sym-row { gap: 6px; }
+  .sih-symbol { font-size: 15px; }
+  .sih-sector { font-size: 9px; padding: 1px 6px; }
+  .sih-price { font-size: 20px; }
+  .sih-change { font-size: 11px; }
+  .sih-price-row { gap: 6px; flex-wrap: wrap; }
+  .sih-range { gap: 4px; }
+  .sih-range-label { font-size: 9px; min-width: 40px; }
+  .sih-metrics { gap: 2px 8px; }
+  .sih-metric { min-width: 55px; }
+  .sih-m-label { font-size: 8px; }
+  .sih-m-val { font-size: 11px; }
+  .sih-signals { font-size: 10px; gap: 3px; padding-top: 4px; flex-wrap: wrap; }
+
+  /* ── Charts — phone height ─────────────── */
+  .candlestick-container { border-radius: 4px; }
+  .candle-legend { gap: 8px; font-size: 9px; }
+  .legend-dot { width: 8px; height: 8px; }
+  .chart-toggles { gap: 3px; margin-bottom: 4px; }
+  .toggle-btn { padding: 2px 6px; font-size: 9px; border-radius: 14px; }
+  .toggle-dot { width: 6px; height: 6px; }
+  .time-slider { padding: 6px 8px; border-radius: 6px; }
+  .time-slider-labels { font-size: 9px; margin-bottom: 4px; }
+  .time-slider-inputs input[type="range"]::-webkit-slider-thumb { width: 18px; height: 18px; }
+  .sub-pane-label { font-size: 10px; padding: 6px 0 2px; }
+  .fib-table { padding: 6px 8px; }
+  .fib-row { grid-template-columns: 38px 55px 1fr; gap: 4px; font-size: 11px; }
+
+  /* ── Weighted Signal ────────────────────── */
+  .wsig-score-block { padding: 8px 10px; border-radius: 8px; }
+  .wsig-score-num { font-size: 20px; }
+  .wsig-score-label { font-size: 12px; }
+  .wsig-analysis-strip { grid-template-columns: 1fr 1fr; gap: 4px; }
+  .wsig-strip-card { padding: 6px; }
+  .wsig-strip-icon { width: 22px; height: 22px; }
+  .wsig-strip-title { font-size: 9px; }
+  .wsig-strip-val { font-size: 12px; }
+  .wsig-strip-detail { font-size: 9px; }
+  .wsig-cat-legend { gap: 4px; }
+  .wsig-cat-chip { font-size: 10px; padding: 1px 6px; }
+  .wsig-row-header { padding: 6px 8px; }
+  .wsig-label { font-size: 11px; }
+  .wsig-cat { font-size: 9px; }
+  .wsig-weight-bar-track { width: 40px; }
+  .wsig-weight-label { font-size: 10px; width: 24px; }
+  .wsig-detail { padding: 8px 10px; gap: 6px; }
+  .wsig-desc { font-size: 11px; }
+  .wsig-quant-row { gap: 4px; }
+  .wsig-quant-badge { padding: 3px 6px; min-width: 44px; }
+  .wsig-quant-label { font-size: 8px; }
+  .wsig-quant-val { font-size: 11px; }
+  .wsig-score-mini { display: none; }
+  .wsig-footer { font-size: 10px; }
+
+  /* ── Prediction ─────────────────────────── */
+  .pd-content { min-height: 200px; }
+  .pd-summary-row { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .pd-stat-card { padding: 6px; }
+  .pd-stat-val { font-size: 13px; }
+  .pd-fib-grid { grid-template-columns: 1fr; }
+  .risk-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+  .risk-metric { padding: 4px 6px; font-size: 11px; }
+  .risk-value { font-size: 11px; }
+  .backtest-verdict { padding: 8px; gap: 8px; font-size: 11px; }
+  .forecast-meta { font-size: 11px; gap: 8px; }
+  .forecast-legend { font-size: 10px; gap: 6px; }
+
+  /* ── Earnings / Dividend ────────────────── */
+  .ed-tabs { gap: 3px; padding-bottom: 6px; margin-bottom: 8px; }
+  .ed-tab-btn { padding: 4px 10px; font-size: 11px; }
+  .ed-highlight-row { padding: 6px 8px; font-size: 11px; }
+  .ed-drift-cell { padding: 3px 6px; min-width: 48px; font-size: 10px; }
+  .eps-history-row { grid-template-columns: 1fr 1fr; gap: 3px; font-size: 10px; padding: 4px 6px; }
+  .ed-div-history { gap: 4px; }
+  .ed-div-hist-item { padding: 3px 6px; font-size: 10px; }
+
+  /* ── Financials ─────────────────────────── */
+  .fp-grid { grid-template-columns: 1fr; gap: 6px; }
+  .fp-section-title { font-size: 11px; margin-bottom: 6px; }
+  .fp-metric-row { padding: 3px 0; font-size: 11px; }
+  .fp-metric-val { font-size: 11px; min-width: 50px; }
+  .fp-metric-label { font-size: 11px; }
+  .fp-search-box input { width: 140px; }
+
+  /* ── Analyst ────────────────────────────── */
+  .analyst-price { font-size: 20px; }
+
+  /* ── News ───────────────────────────────── */
+  .nws-list { max-height: 320px; gap: 4px; }
+  .nws-article { padding: 5px 7px; gap: 6px; border-radius: 6px; }
+  .nws-thumb { width: 44px; height: 33px; border-radius: 4px; }
+  .nws-article-title { font-size: 11px; }
+  .nws-article-meta { font-size: 9px; gap: 4px; margin-top: 2px; }
+  .nws-dev-item { padding: 6px 8px; }
+  .nws-dev-headline { font-size: 12px; }
+  .nws-sec-item { padding: 5px 7px; gap: 6px; }
+  .nws-sec-type { font-size: 9px; padding: 1px 5px; }
+  .nws-sec-title { font-size: 11px; }
+  .nws-recommendation { padding: 8px 10px; }
+  .nws-rec-rating { font-size: 16px; }
+  .nws-rec-target { font-size: 12px; }
+  .nws-outlook-card { min-width: 70px; padding: 6px 8px; }
+  .nws-outlook-label { font-size: 9px; }
+  .nws-outlook-dir { font-size: 12px; }
+  .nws-score-label { width: 80px; font-size: 10px; }
+  .nws-bb-col { padding: 8px 10px; }
+  .nws-bb-header { font-size: 12px; }
+  .nws-bb-item { font-size: 11px; }
   .ni-header-grid { grid-template-columns: 1fr; }
   .ni-conf-bars { grid-template-columns: 1fr; }
   .ni-pred-grid { grid-template-columns: 1fr; }
   .ni-backtest-grid { grid-template-columns: 1fr; }
 
-  /* Weighted signal */
-  .ws-grid { grid-template-columns: 1fr; }
-  .ws-signals-grid { grid-template-columns: repeat(2, 1fr); }
+  /* ── Comparison ─────────────────────────── */
+  .compare-toolbar { gap: 8px; }
+  .compare-chips { gap: 4px; }
+  .cmp-section-tabs { padding: 2px; }
+  .cmp-sec-tab { padding: 5px 8px; font-size: 11px; }
+  .cmp-risk-card { padding: 8px 10px; }
+  .cmp-risk-sym { font-size: 12px; }
+  .cmp-risk-row { font-size: 11px; }
+  .cmp-dd-badge, .cmp-vol-badge { padding: 4px 8px; font-size: 11px; }
+  .cmp-boxplot-label { width: 35px; font-size: 11px; }
+  .cmp-boxplot-vals { display: none; }
+  .cmp-fund-table { min-width: 360px; font-size: 11px; }
+  .verdict-summary { font-size: 13px; }
+  .verdict-stock { padding: 8px; }
 
-  /* Risk metrics */
-  .rm-grid { grid-template-columns: 1fr; }
+  /* ── Correlation ────────────────────────── */
+  .corr-cell { min-width: 30px; font-size: 10px; }
+  .corr-header { font-size: 9px; height: 50px; }
+  .corr-row-label { font-size: 9px; }
 
-  /* Monthly returns heatmap */
-  .mrh-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* ── Screener ───────────────────────────── */
+  .scr-filters { padding: 10px; }
+  .scr-advanced { grid-template-columns: 1fr; }
+  .scr-stats { font-size: 11px; padding: 6px 10px; }
+  .scr-card { padding: 8px; }
+  .scr-card-sym { font-size: 13px; }
+  .scr-card-price { font-size: 16px; margin: 2px 0 4px; }
+  .scr-card-metrics { gap: 3px; }
+  .scr-card-m { font-size: 10px; }
+  .industry-stock-row { grid-template-columns: 50px 1fr 55px 50px; font-size: 10px; padding: 4px 8px; }
 
-  /* Relative performance */
-  .rp-grid { grid-template-columns: 1fr; }
+  /* ── Watchlist ──────────────────────────── */
+  .wl-summary { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .wl-summary-card { padding: 8px 10px; gap: 6px; }
+  .wl-summary-val { font-size: 12px; }
+  .wl-card { padding: 10px; }
+  .watchlist-price { font-size: 16px; }
+  .wl-card-metrics { gap: 4px; font-size: 11px; }
 
-  /* Analyst panel */
-  .ea-grid { grid-template-columns: 1fr; }
-  .ea-ratings-grid { grid-template-columns: 1fr; }
+  /* ── Portfolio ──────────────────────────── */
+  .pb-layout { gap: 8px; }
+  .weight-row { font-size: 12px; gap: 6px; }
 
-  /* Financials */
-  .fin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* ── Sector modal — near full screen ───── */
+  .sector-modal { width: 98vw; max-height: 90vh; padding: 10px; border-radius: 10px; }
+  .sm-title { font-size: 15px; }
+  .sm-meta { font-size: 11px; margin-bottom: 12px; }
+  .sm-stock-row { grid-template-columns: 40px 1fr 48px 44px; font-size: 10px; padding: 4px 4px; }
 
-  /* Earnings */
-  .ed-grid { grid-template-columns: 1fr; }
+  /* ── Drawing pane ──────────────────────── */
+  .drawing-toolbar { padding: 5px 6px; gap: 4px; }
+  .drawing-tools { gap: 3px; }
+  .draw-tool-btn { padding: 3px 7px; font-size: 10px; }
+  .drawing-options { flex-wrap: wrap; gap: 4px; }
 
-  /* Correlation panel */
-  .corr-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* ── All flex/grid children ─────────────── */
+  .analysis-page > *, .dashboard > *, .main > *,
+  .compare-page > *, .scr-page > *, .wl-page > * { max-width: 100%; min-width: 0; }
 
-  /* Comparison */
-  .cmp-stock-picker { flex-direction: column; }
-  .cmp-chart-grid { grid-template-columns: 1fr; }
-
-  /* Trending stocks */
-  .trending-grid { grid-template-columns: 1fr; }
-  .trending-row { font-size: 12px; }
-
-  /* Watchlist */
-  .wl-grid { grid-template-columns: 1fr; gap: 10px; }
-  .wl-card { padding: 12px; }
-  .wl-toolbar { flex-direction: column; gap: 8px; }
-
-  /* Portfolio builder */
-  .pb-layout { grid-template-columns: 1fr; gap: 12px; }
-  .pb-picker { max-height: 300px; }
-
-  /* Time slider — more touch-friendly */
-  .time-slider { padding: 8px 0; }
-  .time-slider input[type="range"] { height: 20px; }
-
-  /* Tables — horizontal scroll */
-  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-  /* Fixed-column grids — make flexible on mobile */
-  .eps-history-row { grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; }
-  .fib-row { grid-template-columns: 40px 60px 1fr; gap: 6px; font-size: 11px; }
-
-  /* Screener table — simplified on mobile */
-  .scr-grid-header { display: none; }
-  .scr-grid-body > div {
-    display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 8px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* Flex rows — force wrapping */
-  .sih-detail-row, .sih-stats, .sih-fundamentals { flex-wrap: wrap; gap: 6px; }
-
-  /* Health score cards */
-  .health-factor-label { min-width: 80px; font-size: 11px; }
-  .health-factor-value { min-width: 40px; font-size: 11px; }
-
-  /* Comparison tables */
-  .cmp-fund-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
-  .cmp-fund-table { min-width: 400px; }
-
-  /* Any flex/grid child must not exceed parent */
-  .analysis-page > *, .main > * { max-width: 100%; min-width: 0; }
-
-  /* All grids with auto-fill/auto-fit — clamp min to 100px on mobile */
-  .pd-summary-row { grid-template-columns: repeat(2, 1fr); }
-
-  /* Loading spinner */
-  .loading { padding: 30px 0; }
-
-  /* Prevent any element from causing horizontal scroll */
+  /* ── Misc ───────────────────────────────── */
+  .loading-container { padding: 24px 8px; }
   pre, code { overflow-x: auto; max-width: 100%; white-space: pre-wrap; word-break: break-all; }
 }
 
-/* ── Small phones (≤ 360px) ───────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   TINY PHONES (≤ 360px) — absolute minimum
+   ══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 360px) {
-  .main { padding: 6px; }
-  .card { padding: 8px; }
-  .tab-btn { padding: 5px 8px; font-size: 11px; }
-  .sih-symbol { font-size: 14px; }
-  .sih-price { font-size: 16px; }
-  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); }
-  .heatmap-cell { font-size: 9px; padding: 5px 3px; }
-  .pd-tab { padding: 6px 8px; font-size: 10px; }
-  .nws-tab-btn { font-size: 10px; padding: 4px 8px; }
-  .summary-card { padding: 8px; }
-  .summary-val { font-size: 14px; }
+  .main { padding: 4px; }
+  .card { padding: 6px; }
+  .card-title { font-size: 10px; margin-bottom: 4px; }
+  .header { padding: 6px 8px; }
+  .header-left h1 { font-size: 12px; }
+  .tab-btn { padding: 4px 7px; font-size: 10px; }
+  .sih-symbol { font-size: 13px; }
+  .sih-price { font-size: 17px; }
+  .summary-grid-wide { grid-template-columns: 1fr 1fr; gap: 4px; }
+  .summary-value { font-size: 13px; }
+  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 2px; }
+  .heatmap-cell { padding: 4px 2px; border-radius: 4px; }
+  .heatmap-change { font-size: 12px; }
+  .heatmap-sector { font-size: 8px; }
+  .pd-tab { padding: 5px 7px; font-size: 10px; }
+  .nws-tab-btn { font-size: 9px; padding: 3px 6px; }
+  .wsig-analysis-strip { grid-template-columns: 1fr; }
 }
