@@ -3880,3 +3880,223 @@ select option {
   .ni-pred-grid { grid-template-columns: repeat(2, 1fr); }
   .ni-backtest-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — comprehensive overrides
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tablet (≤ 768px) ─────────────────────────────── */
+@media (max-width: 768px) {
+  /* Header */
+  .header { padding: 12px 16px; }
+  .header-left h1 { font-size: 15px; }
+  .header-time { display: none; }
+
+  /* Tab navigation — horizontal scroll */
+  .tab-nav {
+    padding: 6px 12px;
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn { padding: 7px 14px; font-size: 13px; white-space: nowrap; flex-shrink: 0; }
+
+  /* Main content */
+  .main { padding: 12px; }
+
+  /* Cards */
+  .card { padding: 14px; }
+  .card-title { font-size: 14px; }
+
+  /* Analysis page */
+  .analysis-top { grid-template-columns: 1fr; }
+  .analysis-toolbar { flex-direction: column; gap: 10px; }
+  .stock-search { max-width: 100%; }
+  .sih-symbol { font-size: 18px; }
+  .sih-price { font-size: 20px; }
+
+  /* Support / Resistance */
+  .sr-grid { grid-template-columns: 1fr; }
+
+  /* Portfolio builder */
+  .pb-layout { grid-template-columns: 1fr; }
+
+  /* Prediction tabs — scrollable */
+  .pd-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .pd-tabs::-webkit-scrollbar { display: none; }
+  .pd-tab { padding: 7px 10px; font-size: 11px; }
+
+  /* News tabs — scrollable */
+  .nws-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-wrap: nowrap; }
+  .nws-tabs::-webkit-scrollbar { display: none; }
+  .nws-tab-btn { flex-shrink: 0; font-size: 11px; padding: 5px 10px; }
+
+  /* Watchlist */
+  .wl-grid { grid-template-columns: 1fr; }
+
+  /* Heatmap */
+  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+
+  /* Comparison page */
+  .cmp-grid { grid-template-columns: 1fr; }
+
+  /* Touch-friendly buttons and inputs */
+  button, select, input { min-height: 36px; }
+  select { font-size: 13px; }
+}
+
+/* ── Mobile (≤ 480px) ─────────────────────────────── */
+@media (max-width: 480px) {
+  body { font-size: 13px; }
+
+  /* Header compact */
+  .header { padding: 10px 12px; }
+  .header-left h1 { font-size: 14px; }
+  .header-left svg { width: 18px; height: 18px; }
+
+  /* Tabs — smaller */
+  .tab-btn { padding: 6px 10px; font-size: 12px; }
+
+  /* Main */
+  .main { padding: 8px; }
+
+  /* Cards tighter */
+  .card { padding: 10px; border-radius: 8px; }
+  .card-title { font-size: 13px; }
+
+  /* Stock info header */
+  .sih-container { padding: 10px 12px; }
+  .sih-symbol { font-size: 16px; }
+  .sih-price { font-size: 18px; }
+  .sih-price-row { flex-wrap: wrap; gap: 6px; }
+  .sih-signals-row { flex-wrap: wrap; gap: 4px; }
+  .sih-sig { font-size: 11px; }
+
+  /* Analysis toolbar */
+  .analysis-toolbar { gap: 8px; }
+  .stock-search { max-width: 100%; }
+  .search-input-wrap { padding: 6px 10px; }
+  .period-selector { width: 100%; justify-content: center; }
+  .period-btn { flex: 1; padding: 5px 6px; font-size: 11px; }
+
+  /* Charts — full width, shorter on mobile */
+  .chart-container { min-height: 220px; }
+
+  /* Indicator grid */
+  .indicator-grid { grid-template-columns: 1fr; gap: 10px; }
+
+  /* Summary grid */
+  .summary-grid { grid-template-columns: 1fr; gap: 8px; }
+
+  /* Screener */
+  .scr-grid { grid-template-columns: 1fr; }
+  .scr-grid-header { display: none; }
+  .scr-grid-body .scr-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Heatmap */
+  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 4px; }
+  .heatmap-cell { padding: 6px 4px; font-size: 10px; }
+
+  /* Sector modal — full screen on mobile */
+  .sector-modal {
+    width: 95vw; max-width: none; max-height: 85vh;
+    padding: 14px 12px;
+  }
+  .sm-pie-wrap { grid-template-columns: 1fr; }
+  .sm-stock-row { grid-template-columns: 40px 1fr 50px 45px; font-size: 11px; }
+
+  /* News */
+  .nws-list { grid-template-columns: 1fr; max-height: 350px; }
+  .nws-devs { grid-template-columns: 1fr; max-height: 350px; }
+  .nws-research { grid-template-columns: 1fr; }
+  .nws-snapshot { grid-template-columns: 1fr; }
+  .nws-item { padding: 8px; }
+  .nws-item-title { font-size: 12px; }
+
+  /* Prediction panels */
+  .pd-summary-row { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .pd-stat-card { padding: 8px; }
+  .pd-stat-val { font-size: 14px; }
+  .pd-fib-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* News impact */
+  .ni-header-grid { grid-template-columns: 1fr; }
+  .ni-conf-bars { grid-template-columns: 1fr; }
+  .ni-pred-grid { grid-template-columns: 1fr; }
+  .ni-backtest-grid { grid-template-columns: 1fr; }
+
+  /* Weighted signal */
+  .ws-grid { grid-template-columns: 1fr; }
+  .ws-signals-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Risk metrics */
+  .rm-grid { grid-template-columns: 1fr; }
+
+  /* Monthly returns heatmap */
+  .mrh-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Relative performance */
+  .rp-grid { grid-template-columns: 1fr; }
+
+  /* Analyst panel */
+  .ea-grid { grid-template-columns: 1fr; }
+  .ea-ratings-grid { grid-template-columns: 1fr; }
+
+  /* Financials */
+  .fin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Earnings */
+  .ed-grid { grid-template-columns: 1fr; }
+
+  /* Correlation panel */
+  .corr-matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Comparison */
+  .cmp-stock-picker { flex-direction: column; }
+  .cmp-chart-grid { grid-template-columns: 1fr; }
+
+  /* Trending stocks */
+  .trending-grid { grid-template-columns: 1fr; }
+  .trending-row { font-size: 12px; }
+
+  /* Watchlist */
+  .wl-grid { grid-template-columns: 1fr; gap: 10px; }
+  .wl-card { padding: 12px; }
+  .wl-toolbar { flex-direction: column; gap: 8px; }
+
+  /* Portfolio builder */
+  .pb-layout { grid-template-columns: 1fr; gap: 12px; }
+  .pb-picker { max-height: 300px; }
+
+  /* Time slider — more touch-friendly */
+  .time-slider { padding: 8px 0; }
+  .time-slider input[type="range"] { height: 20px; }
+
+  /* Tables — horizontal scroll */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Loading spinner */
+  .loading { padding: 30px 0; }
+}
+
+/* ── Small phones (≤ 360px) ───────────────────────── */
+@media (max-width: 360px) {
+  .main { padding: 6px; }
+  .card { padding: 8px; }
+  .tab-btn { padding: 5px 8px; font-size: 11px; }
+  .sih-symbol { font-size: 14px; }
+  .sih-price { font-size: 16px; }
+  .heatmap-grid { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); }
+  .heatmap-cell { font-size: 9px; padding: 5px 3px; }
+  .pd-tab { padding: 6px 8px; font-size: 10px; }
+  .nws-tab-btn { font-size: 10px; padding: 4px 8px; }
+  .summary-card { padding: 8px; }
+  .summary-val { font-size: 14px; }
+}
