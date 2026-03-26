@@ -11,6 +11,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer,
   Cell, ReferenceLine,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import {
   Newspaper, AlertCircle, FileText, TrendingUp, TrendingDown, Minus,
   Globe, Shield, ExternalLink, Brain, Target, RefreshCw, ChevronDown,
@@ -391,7 +392,7 @@ function PatternTab({ data, onRetrain }: { data: NewsImpactData; onRetrain: () =
               <YAxis tick={{ fontSize: 10 }} width={36} tickFormatter={v => `${v}%`} />
               <RTooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
               <ReferenceLine y={0} stroke="#9ca3af" strokeDasharray="3 3" />
-              <Bar dataKey="avg" radius={[4, 4, 0, 0]}>
+              <Bar shape={SafeBarShape} dataKey="avg" radius={[4, 4, 0, 0]}>
                 {predChartData.map((d, i) => <Cell key={i} fill={d.avg >= 0 ? "#34d399" : "#f87171"} />)}
               </Bar>
             </BarChart>

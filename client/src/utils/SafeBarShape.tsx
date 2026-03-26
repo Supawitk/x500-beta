@@ -6,7 +6,7 @@ import React from "react";
  * that occur when Recharts calculates sub-pixel or negative bar dimensions.
  */
 export function SafeBarShape(props: any) {
-  const { x, y, width, height, fill, stroke, radius, ...rest } = props;
+  const { x, y, width, height, fill, stroke, radius } = props;
   const safeWidth = Math.max(0, width ?? 0);
   const safeHeight = Math.max(0, height ?? 0);
   const safeY = height < 0 ? (y ?? 0) + (height ?? 0) : y ?? 0;
@@ -23,7 +23,6 @@ export function SafeBarShape(props: any) {
       stroke={stroke}
       rx={typeof radius === "number" ? radius : 0}
       ry={typeof radius === "number" ? radius : 0}
-      {...rest}
     />
   );
 }

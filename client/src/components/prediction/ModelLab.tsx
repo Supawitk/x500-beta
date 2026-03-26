@@ -3,6 +3,7 @@ import {
   ComposedChart, Line, Area, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, ReferenceLine,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import { Loading } from "../common/Loading";
 import {
@@ -411,8 +412,8 @@ export function ModelLab({ symbol }: Props) {
                   <YAxis domain={[40, 80]} tick={{ fontSize: 10 }} tickFormatter={(v) => `${v}%`} />
                   <Tooltip formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
                   <ReferenceLine y={50} stroke="#d97706" strokeDasharray="3 3" label={{ value: "50% random", fontSize: 10 }} />
-                  <Bar dataKey="naive" fill="#e5e7eb" name="Naive baseline" />
-                  <Bar dataKey="accuracy" fill="#4f46e5" name="Model accuracy" />
+                  <Bar shape={SafeBarShape} dataKey="naive" fill="#e5e7eb" name="Naive baseline" />
+                  <Bar shape={SafeBarShape} dataKey="accuracy" fill="#4f46e5" name="Model accuracy" />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
