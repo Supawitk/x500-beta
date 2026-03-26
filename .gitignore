@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+.env.*
+*.log
+.DS_Store
+server/data/news_corpus.json
+.claude

@@ -1,0 +1,14 @@
+{
+  "name": "sp500-server",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "1.1.1",
+    "elysia": "1.1.27",
+    "finnhub": "^2.0.13",
+    "yahoo-finance2": "^3.0.0"
+  }
+}
