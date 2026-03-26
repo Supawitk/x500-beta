@@ -1,0 +1,10 @@
+{
+  "name": "x500-beta",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd client && bun install && bun run build && cd ../server && bun install",
+    "start": "cd server && bun run src/index.ts",
+    "dev": "concurrently \"cd server && bun run dev\" \"cd client && bun run dev\""
+  }
+}

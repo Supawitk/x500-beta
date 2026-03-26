@@ -12,6 +12,12 @@ import { correlationRoutes } from "./routes/correlation";
 import { predictionRoutes } from "./routes/prediction";
 import { earningsRoutes } from "./routes/earnings";
 import { newsRoutes } from "./routes/news";
+import { join } from "path";
+import { existsSync } from "fs";
+
+const PORT = parseInt(process.env.PORT || "3001");
+const clientDist = join(import.meta.dir, "../../client/dist");
+const hasClientBuild = existsSync(clientDist);
 
 const app = new Elysia()
   .use(cors({ origin: true }))
@@ -33,7 +39,35 @@ const app = new Elysia()
   .use(predictionRoutes)
   .use(earningsRoutes)
   .use(newsRoutes)
-  .get("/api/health", () => ({ status: "ok", timestamp: new Date().toISOString() }))
-  .listen(3001);
+  .get("/api/health", () => ({ status: "ok", timestamp: new Date().toISOString() }));
+
+// Serve React frontend in production
+if (hasClientBuild) {
+  // Serve static assets
+  app.get("/assets/*", ({ params }) => {
+    const filePath = join(clientDist, "assets", (params as any)["*"]);
+    return new Response(Bun.file(filePath));
+  });
+
+  // Serve other static files (favicon, etc.)
+  app.get("/*", ({ path, set }) => {
+    // Skip API routes
+    if (path.startsWith("/api")) return;
+
+    const filePath = join(clientDist, path);
+    if (existsSync(filePath) && !Bun.file(filePath).name?.endsWith("/")) {
+      return new Response(Bun.file(filePath));
+    }
+
+    // SPA fallback — serve index.html for all non-file routes
+    return new Response(Bun.file(join(clientDist, "index.html")), {
+      headers: { "Content-Type": "text/html" },
+    });
+  });
+
+  console.log("Serving React frontend from client/dist");
+}
+
+app.listen(PORT);
 
 console.log(`Server running at http://localhost:${app.server?.port}`);
