@@ -3,6 +3,7 @@ import {
   ComposedChart, Line, Bar, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, ReferenceLine, Legend,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { AnalysisDataPoint } from "../../api/analysis";
 

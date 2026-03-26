@@ -3,6 +3,7 @@ import {
   ComposedChart, Line, Area, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   ResponsiveContainer, ReferenceLine, Legend,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Loading } from "../common/Loading";
 import { fetchGarch, type GarchResult } from "../../api/prediction";
 import { SettingsCtx, Stat } from "./PredictionShared";
@@ -59,7 +60,7 @@ export function VolatilityTab({ symbol }: { symbol: string }) {
             <XAxis dataKey="day" tick={{ fontSize: 10 }} />
             <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}%`} />
             <Tooltip formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
-            <Bar dataKey="vol" fill="#6366f1" radius={[3, 3, 0, 0]} name="Forecast Vol" />
+            <Bar shape={SafeBarShape} dataKey="vol" fill="#6366f1" radius={[3, 3, 0, 0]} name="Forecast Vol" />
             <ReferenceLine y={data.current_vol} stroke="#dc2626" strokeDasharray="3 3" label={{ value: "Current", fontSize: 10 }} />
           </ComposedChart>
         </ResponsiveContainer>

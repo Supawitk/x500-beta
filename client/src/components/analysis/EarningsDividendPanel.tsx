@@ -4,6 +4,7 @@ import { Loading } from "../common/Loading";
 import { fetchEarningsDividend, type EarningsDividendData, type EpsHistoryItem, type IncomeEntry } from "../../api/earnings";
 import { Calendar, TrendingUp, DollarSign, BarChart2, Activity } from "lucide-react";
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, ComposedChart, Line } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 
 interface Props {
   symbol: string;
@@ -398,8 +399,8 @@ function FinancialsTab({ data }: { data: EarningsDividendData }) {
           <YAxis fontSize={10} tick={{ fill: "var(--text-muted)" }} tickFormatter={formatYAxis} />
           <Tooltip content={customTooltip} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Bar dataKey="Revenue" fill="#818cf8" radius={[3, 3, 0, 0]} />
-          <Bar dataKey="Gross Profit" fill="#34d399" radius={[3, 3, 0, 0]} />
+          <Bar shape={SafeBarShape} dataKey="Revenue" fill="#818cf8" radius={[3, 3, 0, 0]} />
+          <Bar shape={SafeBarShape} dataKey="Gross Profit" fill="#34d399" radius={[3, 3, 0, 0]} />
           <Line type="monotone" dataKey="Net Income" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
         </ComposedChart>
       </ResponsiveContainer>
@@ -433,7 +434,7 @@ function FinancialsTab({ data }: { data: EarningsDividendData }) {
               <XAxis dataKey="period" fontSize={11} tick={{ fill: "var(--text-muted)" }} />
               <YAxis fontSize={10} tick={{ fill: "var(--text-muted)" }} />
               <Tooltip content={customTooltip} />
-              <Bar dataKey="EPS" fill="#60a5fa" radius={[3, 3, 0, 0]} />
+              <Bar shape={SafeBarShape} dataKey="EPS" fill="#60a5fa" radius={[3, 3, 0, 0]} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>

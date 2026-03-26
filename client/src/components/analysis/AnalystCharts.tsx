@@ -1,6 +1,7 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { ThreeDChart } from "./ThreeDChart";
 import type { StockDetail, AnalysisDataPoint } from "../../api/analysis";
 import { fmt, fmtB } from "./analystHelpers";
@@ -127,7 +128,7 @@ export function RiskTab({ detail, currentPrice }: { detail: StockDetail; current
               <XAxis type="number" tickFormatter={(v) => `${v > 0 ? "+" : ""}${v.toFixed(0)}%`} />
               <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v: number) => [`${v > 0 ? "+" : ""}${v.toFixed(1)}%`, "Return"]} />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+              <Bar shape={SafeBarShape} dataKey="value" radius={[0, 4, 4, 0]}>
                 {rrData.map((d, i) => <Cell key={i} fill={d.value > 0 ? "#059669" : d.value < 0 ? "#dc2626" : "#6b7280"} />)}
               </Bar>
             </BarChart>

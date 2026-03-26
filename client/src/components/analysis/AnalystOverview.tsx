@@ -1,6 +1,7 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import type { StockDetail } from "../../api/analysis";
 import { REC_COLORS } from "./analystHelpers";
 
@@ -97,7 +98,7 @@ export function ConsensusTab({ detail, currentPrice }: Props) {
                 <XAxis type="number" hide />
                 <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 11 }} />
                 <Tooltip formatter={(v: number) => [`${v} (${totalRec > 0 ? ((v / totalRec) * 100).toFixed(0) : 0}%)`, "Analysts"]} />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                <Bar shape={SafeBarShape} dataKey="value" radius={[0, 4, 4, 0]}>
                   {recData.map((d) => <Cell key={d.name} fill={REC_COLORS[d.name] || "#6b7280"} />)}
                 </Bar>
               </BarChart>

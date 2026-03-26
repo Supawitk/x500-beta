@@ -4,6 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   ReferenceLine, BarChart, Bar, Cell,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Shield, TrendingDown, Activity, AlertTriangle } from "lucide-react";
 import type { AnalysisDataPoint } from "../../api/analysis";
 
@@ -257,7 +258,7 @@ export function RiskMetricsPanel({ data, symbol }: Props) {
                 contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11 }}
                 formatter={(v: number) => [`${v} days`, "Count"]}
               />
-              <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+              <Bar shape={SafeBarShape} dataKey="count" radius={[3, 3, 0, 0]}>
                 {metrics.returnDist.map((d, i) => (
                   <Cell key={i} fill={d.color} />
                 ))}

@@ -1,6 +1,7 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { StockQuote } from "../../types/stock";
 
@@ -34,7 +35,7 @@ export function ChangeDistribution({ stocks }: Props) {
           <XAxis dataKey="name" tick={{ fontSize: 10 }} />
           <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
           <Tooltip />
-          <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+          <Bar shape={SafeBarShape} dataKey="count" radius={[4, 4, 0, 0]}>
             {data.map((d, i) => (
               <Cell key={i} fill={d.isPositive ? "#059669" : "#dc2626"} />
             ))}

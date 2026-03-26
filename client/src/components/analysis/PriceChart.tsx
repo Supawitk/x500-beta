@@ -2,6 +2,7 @@ import {
   ComposedChart, Line, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, Legend,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { AnalysisDataPoint } from "../../api/analysis";
 
@@ -32,7 +33,7 @@ export function PriceChart({ data, symbol }: Props) {
             }
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Bar dataKey="volume" yAxisId="vol" fill="#e5e7eb" name="Volume" />
+          <Bar shape={SafeBarShape} dataKey="volume" yAxisId="vol" fill="#e5e7eb" name="Volume" />
           <Line dataKey="close" yAxisId="price" stroke="#1f2937" dot={false}
             strokeWidth={2} name="Close" />
           <Line dataKey="ema12" yAxisId="price" stroke="#4f46e5" dot={false}

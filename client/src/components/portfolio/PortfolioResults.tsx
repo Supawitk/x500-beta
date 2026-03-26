@@ -3,6 +3,7 @@ import {
   ResponsiveContainer, ReferenceLine, Legend, Cell, BarChart,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Target } from "lucide-react";
 import { Loading } from "../common/Loading";
 import type { SimResult, Strategy } from "./portfolioConstants";
@@ -106,7 +107,7 @@ export function PortfolioResults({
                       <XAxis dataKey="month" tick={{ fontSize: 9 }} interval={Math.floor(result.backtest.monthly_returns.length / 8)} />
                       <YAxis tick={{ fontSize: 9 }} tickFormatter={v => `${v}%`} />
                       <Tooltip formatter={(v: any) => `${Number(v).toFixed(2)}%`} />
-                      <Bar dataKey="ret" radius={[2, 2, 0, 0]}>
+                      <Bar shape={SafeBarShape} dataKey="ret" radius={[2, 2, 0, 0]}>
                         {result.backtest.monthly_returns.map((v, i) => (
                           <Cell key={i} fill={v >= 0 ? "#059669" : "#dc2626"} opacity={0.7} />
                         ))}
@@ -171,7 +172,7 @@ export function PortfolioResults({
                       <XAxis dataKey="bin" tick={{ fontSize: 9 }} tickFormatter={v => `${v}%`} />
                       <YAxis hide />
                       <Tooltip formatter={(v: any) => [v, "Simulations"]} labelFormatter={l => `${l}% return`} />
-                      <Bar dataKey="count" radius={[2, 2, 0, 0]}>
+                      <Bar shape={SafeBarShape} dataKey="count" radius={[2, 2, 0, 0]}>
                         {result.projection.return_histogram.map((h, i) => (
                           <Cell key={i} fill={h.bin >= 0 ? "#059669" : "#dc2626"} opacity={0.7} />
                         ))}

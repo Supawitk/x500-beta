@@ -3,6 +3,7 @@ import {
   ComposedChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   ResponsiveContainer, ReferenceLine, Cell, Legend,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Loading } from "../common/Loading";
 import { fetchSeasonal, type SeasonalResult } from "../../api/prediction";
 import { SettingsCtx, Stat, pctCol } from "./PredictionShared";
@@ -84,7 +85,7 @@ export function SeasonalTab({ symbol }: { symbol: string }) {
             <XAxis dataKey="month" tick={{ fontSize: 10 }} />
             <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}%`} />
             <Tooltip formatter={((v: any, name: any) => [name === "avg" ? `${Number(v).toFixed(3)}%` : `${Number(v).toFixed(0)}%`, name === "avg" ? "Avg Return" : "Win %"]) as any} />
-            <Bar dataKey="avg" name="Avg Return" radius={[3, 3, 0, 0]}>
+            <Bar shape={SafeBarShape} dataKey="avg" name="Avg Return" radius={[3, 3, 0, 0]}>
               {monthData.map((d, i) => <Cell key={i} fill={d.avg >= 0 ? "#059669" : "#dc2626"} />)}
             </Bar>
           </BarChart>
@@ -119,7 +120,7 @@ export function SeasonalTab({ symbol }: { symbol: string }) {
             <ReferenceLine y={data.conf_bound} stroke="#dc2626" strokeDasharray="3 3" />
             <ReferenceLine y={-data.conf_bound} stroke="#dc2626" strokeDasharray="3 3" />
             <ReferenceLine y={0} stroke="#6b7280" />
-            <Bar dataKey="acf" radius={[2, 2, 0, 0]}>
+            <Bar shape={SafeBarShape} dataKey="acf" radius={[2, 2, 0, 0]}>
               {acfData.map((d, i) => <Cell key={i} fill={Math.abs(d.acf) > data.conf_bound ? "#4f46e5" : "#d1d5db"} />)}
             </Bar>
           </BarChart>

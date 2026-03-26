@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   Cell, ReferenceLine,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import {
   Newspaper, Brain, Target, TrendingUp, TrendingDown,
   RefreshCw, ChevronDown, ChevronUp, Zap, Shield, ExternalLink,
@@ -148,12 +149,12 @@ function PredictionCards({ prediction, label }: {
               ]}
             />
             <ReferenceLine y={0} stroke="#9ca3af" strokeDasharray="3 3" />
-            <Bar dataKey="avg" name="avg" radius={[4, 4, 0, 0]}>
+            <Bar shape={SafeBarShape} dataKey="avg" name="avg" radius={[4, 4, 0, 0]}>
               {predChartData.map((d, i) => (
                 <Cell key={i} fill={d.avg >= 0 ? "#34d399" : "#f87171"} />
               ))}
             </Bar>
-            <Bar dataKey="median" name="median" radius={[4, 4, 0, 0]} opacity={0.5}>
+            <Bar shape={SafeBarShape} dataKey="median" name="median" radius={[4, 4, 0, 0]} opacity={0.5}>
               {predChartData.map((d, i) => (
                 <Cell key={i} fill={d.median >= 0 ? "#059669" : "#dc2626"} />
               ))}

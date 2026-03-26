@@ -2,6 +2,7 @@ import { Card } from "../common/Card";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import type { StockDetail } from "../../api/analysis";
 
 interface Props {
@@ -69,7 +70,7 @@ export function AnalystPanel({ detail, currentPrice }: Props) {
             <XAxis type="number" hide />
             <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 11 }} />
             <Tooltip />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+            <Bar shape={SafeBarShape} dataKey="value" radius={[0, 4, 4, 0]}>
               {recData.map((d) => (
                 <Cell key={d.name} fill={REC_COLORS[d.name] || "#6b7280"} />
               ))}

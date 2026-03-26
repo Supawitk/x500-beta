@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   Cell, CartesianGrid, ReferenceLine,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { CompareStock } from "../../api/compare";
 
@@ -56,7 +57,7 @@ export function ReturnDistribution({ stocks }: Props) {
           <YAxis tick={{ fontSize: 9 }} />
           <Tooltip formatter={(v: any) => [v, "Days"]} labelFormatter={l => `${l}% daily return`} />
           <ReferenceLine x={0} stroke="#d1d5db" />
-          <Bar dataKey="count" radius={[2, 2, 0, 0]}>
+          <Bar shape={SafeBarShape} dataKey="count" radius={[2, 2, 0, 0]}>
             {s.returnDistribution.map((d, i) => (
               <Cell key={i} fill={d.bin >= 0 ? COLORS[selected % COLORS.length] : "#dc2626"} opacity={0.7} />
             ))}

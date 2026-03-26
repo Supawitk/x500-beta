@@ -2,6 +2,7 @@ import {
   ComposedChart, Line, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { AnalysisDataPoint } from "../../api/analysis";
 
