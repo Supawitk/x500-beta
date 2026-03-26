@@ -3885,6 +3885,20 @@ select option {
    MOBILE RESPONSIVE — comprehensive overrides
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Global overflow prevention ─────────────────── */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; width: 100%; }
+.app { overflow-x: hidden; width: 100%; }
+.main { overflow-x: hidden; max-width: 100vw; }
+.page-transition { overflow-x: hidden; }
+.card { overflow: hidden; max-width: 100%; }
+.analysis-page { overflow-x: hidden; max-width: 100vw; }
+.card > * { max-width: 100%; }
+img, svg, canvas, video { max-width: 100%; height: auto; }
+.recharts-responsive-container { max-width: 100% !important; }
+.recharts-wrapper { max-width: 100% !important; overflow: hidden !important; }
+.tv-lightweight-charts { max-width: 100% !important; overflow: hidden !important; }
+
 /* ── Tablet (≤ 768px) ─────────────────────────────── */
 @media (max-width: 768px) {
   /* Header */
@@ -3951,38 +3965,45 @@ select option {
 @media (max-width: 480px) {
   body { font-size: 13px; }
 
+  /* Global mobile overflow fix */
+  * { max-width: 100vw; }
+  .main { padding: 8px; width: 100%; }
+  .card { padding: 10px; border-radius: 8px; word-break: break-word; overflow: hidden; }
+  .card > div, .card > section { overflow-x: auto; max-width: 100%; }
+
   /* Header compact */
-  .header { padding: 10px 12px; }
+  .header { padding: 10px 12px; flex-wrap: wrap; gap: 6px; }
   .header-left h1 { font-size: 14px; }
   .header-left svg { width: 18px; height: 18px; }
 
-  /* Tabs — smaller */
+  /* Tabs — smaller, scrollable */
+  .tab-nav { padding: 6px 8px; }
   .tab-btn { padding: 6px 10px; font-size: 12px; }
 
-  /* Main */
-  .main { padding: 8px; }
-
-  /* Cards tighter */
-  .card { padding: 10px; border-radius: 8px; }
-  .card-title { font-size: 13px; }
+  /* Cards */
+  .card-title { font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
 
   /* Stock info header */
-  .sih-container { padding: 10px 12px; }
+  .sih-container { padding: 10px 12px; overflow: hidden; }
   .sih-symbol { font-size: 16px; }
   .sih-price { font-size: 18px; }
   .sih-price-row { flex-wrap: wrap; gap: 6px; }
-  .sih-signals-row { flex-wrap: wrap; gap: 4px; }
+  .sih-signals-row { flex-wrap: wrap; gap: 4px; overflow-x: auto; }
   .sih-sig { font-size: 11px; }
+  .sih-metrics { flex-wrap: wrap; }
 
   /* Analysis toolbar */
-  .analysis-toolbar { gap: 8px; }
-  .stock-search { max-width: 100%; }
+  .analysis-toolbar { gap: 8px; width: 100%; }
+  .stock-search { max-width: 100%; width: 100%; }
   .search-input-wrap { padding: 6px 10px; }
-  .period-selector { width: 100%; justify-content: center; }
-  .period-btn { flex: 1; padding: 5px 6px; font-size: 11px; }
+  .period-selector { width: 100%; justify-content: center; flex-wrap: wrap; }
+  .period-btn { flex: 1; padding: 5px 6px; font-size: 11px; min-width: 0; }
 
-  /* Charts — full width, shorter on mobile */
-  .chart-container { min-height: 220px; }
+  /* Charts — constrain to card width */
+  .chart-container { min-height: 220px; max-width: 100%; overflow: hidden; }
+  .candlestick-container { width: 100% !important; max-width: 100% !important; overflow: hidden; }
+  .recharts-wrapper { max-width: 100% !important; }
+  .tv-lightweight-charts { max-width: 100% !important; overflow: hidden !important; }
 
   /* Indicator grid */
   .indicator-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -4082,8 +4103,39 @@ select option {
   /* Tables — horizontal scroll */
   table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
+  /* Fixed-column grids — make flexible on mobile */
+  .eps-history-row { grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; }
+  .fib-row { grid-template-columns: 40px 60px 1fr; gap: 6px; font-size: 11px; }
+
+  /* Screener table — simplified on mobile */
+  .scr-grid-header { display: none; }
+  .scr-grid-body > div {
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Flex rows — force wrapping */
+  .sih-detail-row, .sih-stats, .sih-fundamentals { flex-wrap: wrap; gap: 6px; }
+
+  /* Health score cards */
+  .health-factor-label { min-width: 80px; font-size: 11px; }
+  .health-factor-value { min-width: 40px; font-size: 11px; }
+
+  /* Comparison tables */
+  .cmp-fund-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+  .cmp-fund-table { min-width: 400px; }
+
+  /* Any flex/grid child must not exceed parent */
+  .analysis-page > *, .main > * { max-width: 100%; min-width: 0; }
+
+  /* All grids with auto-fill/auto-fit — clamp min to 100px on mobile */
+  .pd-summary-row { grid-template-columns: repeat(2, 1fr); }
+
   /* Loading spinner */
   .loading { padding: 30px 0; }
+
+  /* Prevent any element from causing horizontal scroll */
+  pre, code { overflow-x: auto; max-width: 100%; white-space: pre-wrap; word-break: break-all; }
 }
 
 /* ── Small phones (≤ 360px) ───────────────────────── */
