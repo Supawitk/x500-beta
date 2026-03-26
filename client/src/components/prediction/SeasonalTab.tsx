@@ -83,7 +83,7 @@ export function SeasonalTab({ symbol }: { symbol: string }) {
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
             <XAxis dataKey="month" tick={{ fontSize: 10 }} />
             <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}%`} />
-            <Tooltip formatter={(v: any, name: string) => [name === "avg" ? `${Number(v).toFixed(3)}%` : `${Number(v).toFixed(0)}%`, name === "avg" ? "Avg Return" : "Win %"]} />
+            <Tooltip formatter={((v: any, name: any) => [name === "avg" ? `${Number(v).toFixed(3)}%` : `${Number(v).toFixed(0)}%`, name === "avg" ? "Avg Return" : "Win %"]) as any} />
             <Bar dataKey="avg" name="Avg Return" radius={[3, 3, 0, 0]}>
               {monthData.map((d, i) => <Cell key={i} fill={d.avg >= 0 ? "#059669" : "#dc2626"} />)}
             </Bar>

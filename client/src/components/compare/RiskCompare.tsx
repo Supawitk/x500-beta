@@ -1,6 +1,6 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  Cell, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis,
+  Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis,
 } from "recharts";
 import { Card } from "../common/Card";

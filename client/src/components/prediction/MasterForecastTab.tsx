@@ -341,7 +341,7 @@ export function MasterForecastTab({ symbol }: { symbol: string }) {
               <XAxis dataKey="date" tick={{ fontSize: 8 }} tickFormatter={d => d?.slice(5)} />
               <YAxis dataKey="ret" tick={{ fontSize: 9 }} tickFormatter={v => `${v}%`} name="Return" />
               <ZAxis dataKey="vol" range={[20, 200]} name="Volatility" />
-              <Tooltip formatter={(v: any, name: string) => [name === "ret" ? `${v}%` : `${v}%`, name === "ret" ? "Return" : "Volatility"]} />
+              <Tooltip formatter={((v: any, name: any) => [name === "ret" ? `${v}%` : `${v}%`, name === "ret" ? "Return" : "Volatility"]) as any} />
               {["Bull", "Bear", "Sideways"].map(regime => {
                 const timeline = data.models.find(m => m.name === "Regime")?.extra?.timeline as any[];
                 const points = timeline?.filter((t: any) => t.regime === regime) ?? [];

@@ -1,6 +1,6 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  Legend, CartesianGrid, ReferenceLine, Cell,
+  Legend, CartesianGrid, ReferenceLine,
 } from "recharts";
 import { Card } from "../common/Card";
 import type { CompareStock } from "../../api/compare";

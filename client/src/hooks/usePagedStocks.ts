@@ -26,7 +26,7 @@ export function usePagedStocks(): PagedStocksState {
   const [totalPages, setTotalPages] = useState(1);
   const [totalSymbols, setTotalSymbols] = useState(0);
   const loadingRef = useRef(false);
-  const autoRefreshRef = useRef<ReturnType<typeof setInterval>>();
+  const autoRefreshRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   const fetchPage = useCallback(async (p: number, isFirst: boolean) => {
     if (loadingRef.current) return;

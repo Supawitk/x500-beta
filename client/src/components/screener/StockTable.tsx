@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Badge } from "../common/Badge";
 import {
   Star, ArrowUpDown, ArrowUp, ArrowDown,
-  LayoutGrid, List, GitCompareArrows, Eye,
+  LayoutGrid, List, GitCompareArrows,
 } from "lucide-react";
 import type { StockQuote } from "../../types/stock";
 

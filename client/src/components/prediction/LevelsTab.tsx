@@ -98,7 +98,7 @@ export function LevelsTab({ symbol }: { symbol: string }) {
           <BarChart data={data.volume_profile.filter((_, i) => i % 2 === 0)} layout="vertical">
             <XAxis type="number" hide />
             <YAxis type="category" dataKey="price" tick={{ fontSize: 9 }} width={55} tickFormatter={v => `$${v}`} />
-            <Tooltip formatter={(v: number) => [v.toLocaleString(), "Volume"]} />
+            <Tooltip formatter={((v: any) => [Number(v).toLocaleString(), "Volume"]) as any} />
             <Bar dataKey="volume" radius={[0, 3, 3, 0]}>
               {data.volume_profile.filter((_, i) => i % 2 === 0).map((v, i) => (
                 <Cell key={i} fill={v.price <= data.lastPrice ? "#059669" : "#dc2626"} opacity={Math.max(0.3, v.volume / maxVol)} />

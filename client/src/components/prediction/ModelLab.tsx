@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   ComposedChart, Line, Area, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, ReferenceLine, Legend,
+  ResponsiveContainer, ReferenceLine,
 } from "recharts";
 import { Card } from "../common/Card";
 import { Loading } from "../common/Loading";

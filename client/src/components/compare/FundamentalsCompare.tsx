@@ -133,7 +133,7 @@ export function FundamentalsCompare({ stocks }: Props) {
                 {metrics.map(m => (
                   <tr key={m.label}>
                     <td className="cmp-fund-label">{m.label}</td>
-                    {stocks.map((s, si) => {
+                    {stocks.map((s, _si) => {
                       const v = m.get(s);
                       const st = m.status(v);
                       const isBest = bestPerMetric[m.label] === s.symbol;

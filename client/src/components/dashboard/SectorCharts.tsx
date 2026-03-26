@@ -171,7 +171,7 @@ function SectorModal({
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(v: number) => [`${fmtCap(v)} (${((v / totalCap) * 100).toFixed(1)}%)`, "Market Cap"]}
+                    formatter={((v: any) => [`${fmtCap(Number(v))} (${((Number(v) / totalCap) * 100).toFixed(1)}%)`, "Market Cap"]) as any}
                     contentStyle={{
                       background: "rgba(30,30,40,0.9)", border: "1px solid rgba(255,255,255,0.1)",
                       borderRadius: 8, fontSize: 11, color: "#fff",
@@ -340,6 +340,7 @@ export function SectorCharts({ sectors, sectorPerformance, onSelectStock }: Prop
         <Card title={`S&P 500 Sector Distribution (${total} stocks)`}>
           <ResponsiveContainer width="100%" height={380}>
             <PieChart>
+              {/* @ts-expect-error recharts Pie activeIndex typing */}
               <Pie
                 data={pieData}
                 dataKey="value"
