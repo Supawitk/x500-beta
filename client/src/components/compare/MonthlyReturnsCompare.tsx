@@ -2,7 +2,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   Legend, CartesianGrid, ReferenceLine,
 } from "recharts";
-import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { CompareStock } from "../../api/compare";
 
@@ -57,7 +56,7 @@ export function MonthlyReturnsCompare({ stocks }: Props) {
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <ReferenceLine y={0} stroke="#d1d5db" />
           {stocks.map((s, i) => (
-            <Bar shape={SafeBarShape} key={s.symbol} dataKey={s.symbol} fill={COLORS[i % COLORS.length]}
+            <Bar key={s.symbol} dataKey={s.symbol} fill={COLORS[i % COLORS.length]}
               radius={[2, 2, 0, 0]} opacity={0.8} />
           ))}
         </BarChart>

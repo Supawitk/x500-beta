@@ -4,7 +4,6 @@ import {
   ResponsiveContainer, ReferenceLine, BarChart, Cell, Legend, ScatterChart, Scatter, ZAxis,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
 } from "recharts";
-import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Loading } from "../common/Loading";
 import {
   fetchMasterForecast,
@@ -175,7 +174,7 @@ export function MasterForecastTab({ symbol }: { symbol: string }) {
                           <XAxis dataKey="bin" tick={{ fontSize: 9 }} tickFormatter={(v: number) => `${v}%`} />
                           <YAxis hide />
                           <Tooltip formatter={(v: any) => [v, "Count"]} />
-                          <Bar shape={SafeBarShape} dataKey="count" radius={[2, 2, 0, 0]}>
+                          <Bar dataKey="count" radius={[2, 2, 0, 0]}>
                             {(m.extra.histogram as any[]).map((h: any, i: number) => (
                               <Cell key={i} fill={h.bin >= 0 ? "#059669" : "#dc2626"} opacity={0.7} />
                             ))}

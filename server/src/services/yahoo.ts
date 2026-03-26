@@ -1,4 +1,4 @@
-import yf from "./yfClient";
+import YahooFinance from "yahoo-finance2";
 import type { StockQuote } from "../types/stock";
 import {
   calcGrahamNumber, calcIntrinsicValue,
@@ -6,6 +6,8 @@ import {
 } from "../utils/calculations";
 import { getCache, setCache } from "./cache";
 import { SECTOR_MAP, INDUSTRY_MAP } from "../config/symbols";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 60_000; // 1 minute for full S&P 500 list
 
 function resolveSectorInfo(symbol: string) {
@@ -81,7 +83,7 @@ export async function fetchQuotesPage(symbols: string[], page: number): Promise<
 
   if (batch.length > 0) {
     try {
-      const results = await yf.quote(batch);
+      const results = await yf.quote(batch, {}, { validateResult: false });
       const arr = Array.isArray(results) ? results : [results];
       stocks.push(...arr.map(mapQuote).filter((s): s is StockQuote => s !== null));
     } catch (e) {
@@ -118,7 +120,7 @@ export async function fetchSingleQuote(
   const cached = getCache<StockQuote>(cacheKey);
   if (cached) return cached;
 
-  const result = await yf.quote(symbol);
+  const result = await yf.quote(symbol, {}, { validateResult: false });
   const stock = mapQuote(result);
   if (stock) setCache(cacheKey, stock, CACHE_TTL);
   return stock;

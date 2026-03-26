@@ -3,7 +3,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Sector,
 } from "recharts";
-import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import { X, TrendingUp, TrendingDown } from "lucide-react";
 import type { SectorSummary, SectorPerformance } from "../../types/stock";
@@ -329,7 +328,7 @@ export function SectorCharts({ sectors, sectorPerformance, onSelectStock }: Prop
               <XAxis type="number" tick={{ fontSize: 11, fill: "var(--text-muted)" }} />
               <YAxis type="category" dataKey="name" width={85} tick={{ fontSize: 11, fill: "var(--text-muted)" }} />
               <Tooltip content={peTooltip} />
-              <Bar shape={SafeBarShape} dataKey="value" fill="#4f46e5" radius={[0, 4, 4, 0]} animationDuration={800}>
+              <Bar dataKey="value" fill="#4f46e5" radius={[0, 4, 4, 0]} animationDuration={800}>
                 {peData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}

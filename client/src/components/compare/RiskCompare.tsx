@@ -3,7 +3,6 @@ import {
   Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis,
 } from "recharts";
-import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Card } from "../common/Card";
 import type { CompareStock } from "../../api/compare";
 
@@ -94,7 +93,7 @@ export function RiskCompare({ stocks }: Props) {
               <Tooltip contentStyle={{ fontSize: 12 }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               {stocks.map((s, i) => (
-                <Bar shape={SafeBarShape} key={s.symbol} dataKey={s.symbol} fill={COLORS[i % COLORS.length]}
+                <Bar key={s.symbol} dataKey={s.symbol} fill={COLORS[i % COLORS.length]}
                   radius={[3, 3, 0, 0]} opacity={0.85} />
               ))}
             </BarChart>

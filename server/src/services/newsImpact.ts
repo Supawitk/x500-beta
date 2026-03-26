@@ -9,11 +9,13 @@
  * 6. Accumulates data in a persistent JSON corpus for auto-training
  */
 
-import yf from "./yfClient";
+import YahooFinance from "yahoo-finance2";
 import { fetchHistory, type OHLCV } from "./historical";
 import { getCache, setCache } from "./cache";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface NewsEntry {
@@ -276,7 +278,7 @@ export async function analyzeNewsImpact(symbol: string): Promise<NewsImpactResul
   // 1. Fetch current news for target stock
   let targetNews: { title: string; date: string; link: string | null; category: string; sentiment: number; keywords: string[] }[] = [];
   try {
-    const searchResult = await yf.search(symbol, { newsCount: 15, quotesCount: 0 });
+    const searchResult: any = await yf.search(symbol, { newsCount: 15, quotesCount: 0 }, { validateResult: false });
     const articles = searchResult.news || [];
     targetNews = articles
       .filter((a: any) => a.title && a.providerPublishTime)
@@ -313,8 +315,8 @@ export async function analyzeNewsImpact(symbol: string): Promise<NewsImpactResul
     const trainPromises = uniqueStocks.map(async (sym) => {
       try {
         const [searchResult, insightsResult, history] = await Promise.allSettled([
-          yf.search(sym, { newsCount: 20, quotesCount: 0 }),
-          yf.insights(sym, { reportsCount: 0 }),
+          yf.search(sym, { newsCount: 20, quotesCount: 0 }, { validateResult: false }),
+          yf.insights(sym, { reportsCount: 0 }, { validateResult: false }),
           fetchHistory(sym, "2y", "1d"),
         ]);
 
@@ -325,7 +327,7 @@ export async function analyzeNewsImpact(symbol: string): Promise<NewsImpactResul
 
         // Add news articles
         if (searchResult.status === "fulfilled") {
-          const articles = searchResult.value.news || [];
+          const articles = (searchResult.value as any).news || [];
           for (const a of articles) {
             if (!a.title || !a.providerPublishTime) continue;
             const title = a.title as string;
@@ -347,7 +349,7 @@ export async function analyzeNewsImpact(symbol: string): Promise<NewsImpactResul
 
         // Add significant developments (often have older dates with measurable impact)
         if (insightsResult.status === "fulfilled") {
-          const sigDevs = insightsResult.value.sigDevs || [];
+          const sigDevs = (insightsResult.value as any).sigDevs || [];
           for (const d of sigDevs) {
             if (!d.headline || !d.date) continue;
             const title = d.headline as string;

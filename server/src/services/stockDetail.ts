@@ -1,5 +1,7 @@
-import yf from "./yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getCache, setCache } from "./cache";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 120_000; // 2 minutes
 
 export interface StockDetail {
@@ -58,9 +60,9 @@ export async function fetchStockDetail(symbol: string): Promise<StockDetail | nu
   if (cached) return cached;
 
   try {
-    const r = await yf.quoteSummary(symbol, {
+    const r: any = await yf.quoteSummary(symbol, {
       modules: ["financialData", "defaultKeyStatistics", "recommendationTrend", "summaryDetail", "summaryProfile"],
-    });
+    }, { validateResult: false });
     const fd = r.financialData;
     const ks = r.defaultKeyStatistics;
     const sd = r.summaryDetail as any;

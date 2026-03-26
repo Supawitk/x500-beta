@@ -3,7 +3,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Cell,
   ResponsiveContainer,
 } from "recharts";
-import { SafeBarShape } from "../../utils/SafeBarShape";
 import { Loading } from "../common/Loading";
 import { fetchSRLevels, type SRResult } from "../../api/prediction";
 import { SettingsCtx, Stat } from "./PredictionShared";
@@ -100,7 +99,7 @@ export function LevelsTab({ symbol }: { symbol: string }) {
             <XAxis type="number" hide />
             <YAxis type="category" dataKey="price" tick={{ fontSize: 9 }} width={55} tickFormatter={v => `$${v}`} />
             <Tooltip formatter={((v: any) => [Number(v).toLocaleString(), "Volume"]) as any} />
-            <Bar shape={SafeBarShape} dataKey="volume" radius={[0, 3, 3, 0]}>
+            <Bar dataKey="volume" radius={[0, 3, 3, 0]}>
               {data.volume_profile.filter((_, i) => i % 2 === 0).map((v, i) => (
                 <Cell key={i} fill={v.price <= data.lastPrice ? "#059669" : "#dc2626"} opacity={Math.max(0.3, v.volume / maxVol)} />
               ))}

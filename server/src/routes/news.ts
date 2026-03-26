@@ -1,8 +1,10 @@
 import { Elysia } from "elysia";
-import yf from "../services/yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getCache, setCache } from "../services/cache";
 import { fetchMultiSourceNews, adaptYahooNews } from "../services/multiNews";
 import { fetchSECFilings } from "../services/secEdgar";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 300_000; // 5 min
 
 function safeDate(d: any): string | null {
@@ -20,13 +22,13 @@ export const newsRoutes = new Elysia({ prefix: "/api/news" })
     try {
       // Fetch news via search and insights in parallel
       const [searchResult, insightsResult] = await Promise.allSettled([
-        yf.search(symbol, { newsCount: 20, quotesCount: 0 }),
-        yf.insights(symbol, { reportsCount: 5 }),
+        yf.search(symbol, { newsCount: 20, quotesCount: 0 }, { validateResult: false }),
+        yf.insights(symbol, { reportsCount: 5 }, { validateResult: false }),
       ]);
 
       // News articles from search
       const news = searchResult.status === "fulfilled"
-        ? (searchResult.value.news || []).map((n: any) => ({
+        ? ((searchResult.value as any).news || []).map((n: any) => ({
             uuid: n.uuid,
             title: n.title,
             publisher: n.publisher,
@@ -47,7 +49,7 @@ export const newsRoutes = new Elysia({ prefix: "/api/news" })
       let upsell: any = null;
 
       if (insightsResult.status === "fulfilled") {
-        const ins = insightsResult.value;
+        const ins = insightsResult.value as any;
 
         sigDevs = (ins.sigDevs || []).map((d: any) => ({
           headline: d.headline,
@@ -145,13 +147,13 @@ export const newsRoutes = new Elysia({ prefix: "/api/news" })
     try {
       // Fetch Yahoo news + multi-source in parallel
       const [yahooSearch, multiSource] = await Promise.allSettled([
-        yf.search(symbol, { newsCount: 15, quotesCount: 0 }),
+        yf.search(symbol, { newsCount: 15, quotesCount: 0 }, { validateResult: false }),
         fetchMultiSourceNews(symbol),
       ]);
 
       // Adapt Yahoo articles to unified format
       const yahooArticles = yahooSearch.status === "fulfilled"
-        ? adaptYahooNews((yahooSearch.value.news || []).map((n: any) => ({
+        ? adaptYahooNews(((yahooSearch.value as any).news || []).map((n: any) => ({
             uuid: n.uuid,
             title: n.title,
             publisher: n.publisher,

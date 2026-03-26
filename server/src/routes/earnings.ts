@@ -1,6 +1,8 @@
 import { Elysia } from "elysia";
-import yf from "../services/yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getCache, setCache } from "../services/cache";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 180_000; // 3 min
 
 function round2(n: number | null | undefined): number | null {
@@ -34,17 +36,17 @@ export const earningsRoutes = new Elysia({ prefix: "/api/earnings" })
       const [r, ftsQ, ftsA] = await Promise.all([
         yf.quoteSummary(symbol, {
           modules: ["calendarEvents", "earningsTrend", "summaryDetail", "earningsHistory"],
-        }),
+        }, { validateResult: false }) as any,
         yf.fundamentalsTimeSeries(symbol, {
           period1: new Date(Date.now() - 2 * 365 * 86400000).toISOString().split("T")[0],
           type: "quarterly",
           module: "financials",
-        }).catch(() => []),
+        }, { validateResult: false }).catch(() => []) as any,
         yf.fundamentalsTimeSeries(symbol, {
           period1: new Date(Date.now() - 5 * 365 * 86400000).toISOString().split("T")[0],
           type: "annual",
           module: "financials",
-        }).catch(() => []),
+        }, { validateResult: false }).catch(() => []) as any,
       ]);
 
       const cal = r.calendarEvents;

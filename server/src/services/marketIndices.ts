@@ -1,5 +1,7 @@
-import yf from "./yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getCache, setCache } from "./cache";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 30_000;
 
 export interface MarketIndex {
@@ -18,7 +20,7 @@ export async function fetchMarketIndices(): Promise<MarketIndex[]> {
   if (cached) return cached;
 
   try {
-    const results = await yf.quote(INDEX_SYMBOLS);
+    const results = await yf.quote(INDEX_SYMBOLS, {}, { validateResult: false });
     const arr = Array.isArray(results) ? results : [results];
     const indices = arr
       .filter((q: any) => q && q.regularMarketPrice)

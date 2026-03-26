@@ -1,7 +1,9 @@
 import { Elysia, t } from "elysia";
-import yf from "../services/yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getAllStocks } from "../services/stockService";
 import { getCache, setCache } from "../services/cache";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 export const searchRoutes = new Elysia({ prefix: "/api" })
   .get("/search", async ({ query }) => {
@@ -47,7 +49,7 @@ export const searchRoutes = new Elysia({ prefix: "/api" })
       // 2. Yahoo Finance search for non-S&P500 stocks
       let yfMatches: any[] = [];
       try {
-        const result = await yf.search(q);
+        const result: any = await yf.search(q, {}, { validateResult: false });
         const localSymbols = new Set(localMatches.map((r) => r.symbol));
         yfMatches = (result.quotes || [])
           .filter((r: any) =>

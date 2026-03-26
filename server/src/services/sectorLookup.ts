@@ -1,5 +1,7 @@
-import yf from "./yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getCache, setCache } from "./cache";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 3600_000; // 1 hour - sectors don't change often
 
 interface SectorInfo {
@@ -26,7 +28,7 @@ export async function lookupSectors(
     const results = await Promise.allSettled(
       batch.map(async (sym) => {
         try {
-          const data = await yf.quoteSummary(sym, { modules: ["assetProfile"] });
+          const data: any = await yf.quoteSummary(sym, { modules: ["assetProfile"] }, { validateResult: false });
           return {
             symbol: sym,
             sector: data.assetProfile?.sector || "Unknown",

@@ -1,5 +1,7 @@
-import yf from "./yfClient";
+import YahooFinance from "yahoo-finance2";
 import { getCache, setCache } from "./cache";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const CACHE_TTL = 60_000; // 1 minute
 
 export interface OHLCV {
@@ -27,10 +29,10 @@ export async function fetchHistory(
   const days = periodMap[period] || 180;
   const start = new Date(now.getTime() - days * 86400000);
 
-  const result = await yf.chart(symbol, {
+  const result: any = await yf.chart(symbol, {
     period1: start.toISOString().split("T")[0],
     interval,
-  });
+  }, { validateResult: false });
 
   const data: OHLCV[] = result.quotes
     .filter((q: any) => q.close !== null && q.close !== undefined)
@@ -57,11 +59,11 @@ export async function fetchHistoryRange(
   const cached = getCache<OHLCV[]>(cacheKey);
   if (cached) return cached;
 
-  const result = await yf.chart(symbol, {
+  const result: any = await yf.chart(symbol, {
     period1: startDate,
     period2: endDate,
     interval,
-  });
+  }, { validateResult: false });
 
   const data: OHLCV[] = result.quotes
     .filter((q: any) => q.close !== null && q.close !== undefined)
