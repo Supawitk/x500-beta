@@ -58,7 +58,8 @@ export function PortfolioBuilder() {
       const symbols = assets.map(a => a.symbol).join(",");
       const weights = assets.map(a => a.weight / totalWeight).join(",");
       const primaryStrategy = strategies[0];
-      const url = `${BASE}/portfolio-strategy?symbols=${symbols}&weights=${weights}&strategy=${primaryStrategy}&goal_return=${goalReturn}&goal_years=${goalYears}&initial=${initial}&monthly=${monthly}`;
+      const secondaryStrategy = strategies.length > 1 ? strategies[1] : "";
+      const url = `${BASE}/portfolio-strategy?symbols=${symbols}&weights=${weights}&strategy=${primaryStrategy}&strategy2=${secondaryStrategy}&goal_return=${goalReturn}&goal_years=${goalYears}&initial=${initial}&monthly=${monthly}&risk_tolerance=${riskTolerance}&rebalance=${rebalance}&stop_loss=${stopLoss}&take_profit=${takeProfit}`;
       const res = await fetch(url);
       const data = await res.json();
       if (data.error) throw new Error(data.message || data.error);
@@ -69,7 +70,7 @@ export function PortfolioBuilder() {
     } finally {
       setLoading(false);
     }
-  }, [assets, strategies, goalReturn, goalYears, initial, monthly, totalWeight]);
+  }, [assets, strategies, goalReturn, goalYears, initial, monthly, totalWeight, riskTolerance, rebalance, stopLoss, takeProfit]);
 
   return (
     <div className="portfolio-builder">

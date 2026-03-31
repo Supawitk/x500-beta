@@ -8,10 +8,15 @@ returns_list <- input$returns  # named list of return vectors
 symbols <- as.character(input$symbols)
 weights <- as.numeric(input$weights)
 strategy <- as.character(if (is.null(input$strategy)) "long" else input$strategy)
+strategy2 <- as.character(if (is.null(input$strategy2)) "" else input$strategy2)
 goal_return <- as.numeric(if (is.null(input$goal_return)) 10 else input$goal_return)  # annual %
 goal_years <- as.numeric(if (is.null(input$goal_years)) 5 else input$goal_years)
 initial_investment <- as.numeric(if (is.null(input$initial)) 10000 else input$initial)
 monthly_contrib <- as.numeric(if (is.null(input$monthly)) 0 else input$monthly)
+risk_tolerance <- as.character(if (is.null(input$risk_tolerance)) "Moderate" else input$risk_tolerance)
+rebalance_freq <- as.character(if (is.null(input$rebalance)) "Quarterly" else input$rebalance)
+stop_loss_pct <- as.numeric(if (is.null(input$stop_loss)) 0 else input$stop_loss) / 100
+take_profit_pct <- as.numeric(if (is.null(input$take_profit)) 0 else input$take_profit) / 100
 
 tryCatch({
   n_assets <- length(symbols)
@@ -27,13 +32,80 @@ tryCatch({
   if (length(weights) != n_assets) weights <- rep(1/n_assets, n_assets)
   weights <- weights / sum(weights)
 
-  # Strategy adjustments
-  if (strategy == "short") {
-    ret_mat <- -ret_mat  # Inverse returns for short
+  # Risk tolerance volatility scaling
+  risk_scale <- switch(risk_tolerance,
+    "Conservative" = 0.6,
+    "Moderate" = 1.0,
+    "Aggressive" = 1.4,
+    1.0
+  )
+
+  # Rebalance frequency in trading days
+  rebal_days <- switch(rebalance_freq,
+    "Monthly" = 21,
+    "Quarterly" = 63,
+    "Annually" = 252,
+    "Never" = n_days + 1,
+    63
+  )
+
+  # Strategy adjustments — blend primary + secondary if provided
+  apply_strategy <- function(rmat, strat) {
+    if (strat == "short") return(-rmat)
+    rmat  # long, value, dividend, growth, custom all use base returns
+  }
+  ret_mat <- apply_strategy(ret_mat, strategy)
+  if (nchar(strategy2) > 0 && strategy2 != "") {
+    ret_mat2 <- apply_strategy(do.call(cbind, lapply(symbols, function(s) as.numeric(returns_list[[s]]))), strategy2)
+    ret_mat <- 0.7 * ret_mat + 0.3 * ret_mat2  # 70/30 primary/secondary blend
   }
 
-  # Portfolio daily returns
-  port_ret <- ret_mat %*% weights
+  # Portfolio daily returns with rebalancing, stop-loss, and take-profit
+  port_ret <- numeric(n_days)
+  running_weights <- weights
+  peak_value <- 1.0
+  cum_value <- 1.0
+  stopped_out <- FALSE
+  taken_profit <- FALSE
+
+  for (d in 1:n_days) {
+    # Daily return using current weights
+    port_ret[d] <- sum(ret_mat[d, ] * running_weights)
+
+    # Update cumulative value
+    cum_value <- cum_value * (1 + port_ret[d])
+
+    # Track peak for stop-loss
+    if (cum_value > peak_value) peak_value <- cum_value
+
+    # Stop-loss check
+    if (stop_loss_pct > 0 && !stopped_out) {
+      drawdown <- (peak_value - cum_value) / peak_value
+      if (drawdown >= stop_loss_pct) {
+        stopped_out <- TRUE
+        port_ret[d:n_days] <- 0  # Exit position
+        break
+      }
+    }
+
+    # Take-profit check
+    if (take_profit_pct > 0 && !taken_profit) {
+      gain <- cum_value / 1.0 - 1
+      if (gain >= take_profit_pct) {
+        taken_profit <- TRUE
+        port_ret[d:n_days] <- 0  # Lock in gains
+        break
+      }
+    }
+
+    # Rebalance weights periodically
+    if (d %% rebal_days == 0 && d < n_days) {
+      # Drift weights based on returns, then rebalance back to target
+      asset_growth <- 1 + ret_mat[d, ]
+      running_weights <- running_weights * asset_growth
+      running_weights <- weights  # Snap back to target weights
+    }
+  }
 
   # ── Historical performance (backtest) ──
   cum_ret <- cumprod(1 + port_ret)
@@ -92,19 +164,38 @@ tryCatch({
   # ── Forward projection (Monte Carlo) ──
   n_sims <- 3000
   trading_days <- round(goal_years * 252)
-  mu <- mean(port_ret)
-  sigma <- sd(port_ret)
+  active_rets <- port_ret[port_ret != 0]  # Exclude zeroed-out days from stop/TP
+  mu <- mean(active_rets) * risk_scale
+  sigma <- sd(active_rets) * risk_scale
 
-  # Simulate paths
+  # Simulate paths with stop-loss and take-profit applied
   sim_values <- matrix(0, n_sims, trading_days)
   for (s in 1:n_sims) {
     val <- initial_investment
+    sim_peak <- val
+    sim_stopped <- FALSE
     for (d in 1:trading_days) {
+      if (sim_stopped) {
+        sim_values[s, d] <- val
+        next
+      }
       daily_ret <- rnorm(1, mu, sigma)
-      if (strategy == "short") daily_ret <- -daily_ret  # flip back for projection
       val <- val * (1 + daily_ret)
+      if (val > sim_peak) sim_peak <- val
+
       # Monthly contribution every 21 days
       if (d %% 21 == 0 && monthly_contrib > 0) val <- val + monthly_contrib
+
+      # Sim stop-loss
+      if (stop_loss_pct > 0 && (sim_peak - val) / sim_peak >= stop_loss_pct) {
+        sim_stopped <- TRUE
+      }
+      # Sim take-profit
+      total_contrib_so_far <- initial_investment + monthly_contrib * floor(d / 21)
+      if (take_profit_pct > 0 && val / total_contrib_so_far - 1 >= take_profit_pct) {
+        sim_stopped <- TRUE
+      }
+
       sim_values[s, d] <- val
     }
   }
@@ -157,6 +248,13 @@ tryCatch({
   result <- list(
     success = TRUE,
     strategy = strategy,
+    strategy2 = if (nchar(strategy2) > 0) strategy2 else NULL,
+    risk_tolerance = risk_tolerance,
+    rebalance = rebalance_freq,
+    stop_loss = stop_loss_pct * 100,
+    take_profit = take_profit_pct * 100,
+    stopped_out = stopped_out,
+    taken_profit = taken_profit,
     n_assets = n_assets,
     n_days = n_days,
     initial = initial_investment,

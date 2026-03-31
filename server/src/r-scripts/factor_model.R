@@ -15,6 +15,8 @@ dates     <- as.character(input$dates)
 lookahead <- as.integer(ifelse(is.null(input$lookahead), 10, input$lookahead))
 mode      <- ifelse(is.null(input$mode), "classification", input$mode)  # classification | regression
 train_pct <- ifelse(is.null(input$train_pct), 0.75, as.numeric(input$train_pct))
+vix_prices <- if (!is.null(input$vix)) as.numeric(input$vix) else NULL
+spx_prices <- if (!is.null(input$spx)) as.numeric(input$spx) else NULL
 
 safe_sd  <- function(x) { s <- sd(x, na.rm=TRUE); ifelse(is.na(s) || s == 0, 1, s) }
 safe_z   <- function(x) (x - mean(x, na.rm=TRUE)) / safe_sd(x)
@@ -24,7 +26,7 @@ winsorize<- function(x, p=0.01) {
 }
 
 # ── Feature engineering ───────────────────────────────────────────────────────
-build_features <- function(cl, hi, lo, vo) {
+build_features <- function(cl, hi, lo, vo, vix = NULL, spx = NULL) {
   n <- length(cl)
   ret1 <- c(NA, diff(log(cl)))
 
@@ -87,13 +89,41 @@ build_features <- function(cl, hi, lo, vo) {
     tr / cl[i]
   })
 
-  data.frame(
+  df <- data.frame(
     r1=r1, r2=r2, r3=r3, r5=r5, r10=r10,
     ema1226=ema_ratio_12_26, ema_cl50=ema_ratio_cl_50, macd=macd_hist,
     rsi=rsi_z, stoch=stoch_k / 100 - 0.5,
     vol10=vol10, vol_z=vol_z,
     mom3=mom3, mom10=mom10, atr=atr
   )
+
+  # Macro features: VIX level and change, SPX relative strength
+  if (!is.null(vix) && length(vix) == n && any(vix > 0)) {
+    vix_level <- safe_z(vix)  # normalized VIX level
+    vix_chg <- c(NA, diff(log(pmax(vix, 1))))  # VIX daily change
+    vix_ma5 <- sapply(seq_along(vix), function(i) {
+      if (i < 5) NA else mean(vix[(i-4):i])
+    })
+    vix_regime <- ifelse(vix > vix_ma5, 1, 0)  # high-vol regime flag
+    df$vix_level <- vix_level
+    df$vix_chg <- vix_chg
+    df$vix_regime <- vix_regime
+  }
+
+  if (!is.null(spx) && length(spx) == n && any(spx > 0)) {
+    spx_ret <- c(NA, diff(log(spx)))
+    spx_mom5 <- sapply(seq_along(spx), function(i) {
+      if (i < 5) NA else spx[i] / spx[i-4] - 1
+    })
+    # Relative strength vs market
+    stock_ret <- c(NA, diff(log(cl)))
+    rel_strength <- stock_ret - spx_ret
+    df$spx_ret <- spx_ret
+    df$spx_mom5 <- spx_mom5
+    df$rel_strength <- rel_strength
+  }
+
+  df
 }
 
 # ── Walk-Forward Validation ───────────────────────────────────────────────────
@@ -143,7 +173,7 @@ result <- tryCatch({
   n   <- length(closes)
   if (n < 80) stop(paste("Need at least 80 data points, got:", n))
 
-  feats <- build_features(closes, highs, lows, volumes)
+  feats <- build_features(closes, highs, lows, volumes, vix_prices, spx_prices)
 
   # Target: forward return over lookahead period
   fwd_ret <- c(rep(NA, lookahead),

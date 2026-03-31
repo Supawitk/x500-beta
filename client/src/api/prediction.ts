@@ -312,3 +312,42 @@ export interface MasterForecastResult {
 export function fetchMasterForecast(symbol: string, period = "1y", horizon = 14): Promise<MasterForecastResult> {
   return fetchJson(`${BASE}/master/${symbol}?period=${period}&horizon=${horizon}`);
 }
+
+// ── Model Accuracy Leaderboard ──────────────────────────────────────────────
+export interface AccuracyModel {
+  name: string;
+  type: string;
+  status: string;
+  rank?: number;
+  direction?: string;
+  dir_accuracy: number | null;
+  skill_score: number | null;
+  rmse: number | null;
+  n_steps: number | null;
+  confidence: number | null;
+  prob_up: number | null;
+  interpretation?: string;
+  error?: string;
+}
+
+export interface AccuracyResult {
+  symbol: string;
+  period: string;
+  lookahead: number;
+  dataPoints: number;
+  lastPrice: number;
+  leaderboard: AccuracyModel[];
+  failed: AccuracyModel[];
+  top3_consensus: {
+    direction: string;
+    bullish_count: number;
+    bearish_count: number;
+    avg_accuracy: number | null;
+    avg_skill: number | null;
+  };
+  note: string;
+}
+
+export function fetchAccuracy(symbol: string, period = "2y", lookahead = 10): Promise<AccuracyResult> {
+  return fetchJson(`${BASE}/accuracy/${symbol}?period=${period}&lookahead=${lookahead}`);
+}

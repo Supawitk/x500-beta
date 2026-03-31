@@ -69,25 +69,24 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
   }, { query: t.Object({ period: t.Optional(t.String()) }) })
 
   // ── Original pattern backtest (v1) ────────────────────────────────────────
+  // backtest v1 now redirects to enhanced v2 — kept for backwards compatibility
   .get("/backtest/:symbol", async ({ params, query }) => {
-    const symbol   = params.symbol.toUpperCase();
-    const window   = parseInt(query.window || "20");
-    const lookahead= parseInt(query.lookahead || "14");
-    const cacheKey = `backtest_${symbol}_${window}_${lookahead}`;
-    const cached   = getCache<any>(cacheKey);
-    if (cached) return cached;
+    const symbol    = params.symbol.toUpperCase();
+    const window    = parseInt(query.window || "20");
+    const lookahead = parseInt(query.lookahead || "14");
+    const cacheKey  = `backtestv2_${symbol}_${window}_${lookahead}`;
+    const cached    = getCache<any>(cacheKey);
+    if (cached) return { ...cached, _note: "Upgraded: now uses enhanced backtest v2" };
 
     try {
       const history = await fetchHistory(symbol, "3y");
       if (history.length < window + lookahead + 30) {
         return { error: "INSUFFICIENT_DATA", message: `Need more data. Got ${history.length} days.` };
       }
-      const result  = await runRScript("backtest_patterns.R", {
-        prices: history.map((h) => h.close),
-        dates: history.map((h) => h.date),
-        window, lookahead,
+      const result = await runRScript("enhanced_backtest.R", {
+        ...buildHistInput(history), window, lookahead,
       });
-      if (result.success) { result.symbol = symbol; result.dataPoints = history.length; setCache(cacheKey, result, CACHE_TTL); }
+      if (result.success) { result.symbol = symbol; result.dataPoints = history.length; result._note = "Upgraded: now uses enhanced backtest v2"; setCache(cacheKey, result, CACHE_TTL); }
       return result;
     } catch (e: any) {
       return { error: "R_ERROR", message: e.message || "Backtest failed" };
@@ -171,10 +170,26 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
     if (!retrain) { const c = getCache<any>(cacheKey); if (c) return c; }
 
     try {
-      const history = await fetchHistory(symbol, period);
+      const [history, vixHistory, spxHistory] = await Promise.all([
+        fetchHistory(symbol, period),
+        fetchHistory("^VIX", period).catch(() => []),
+        fetchHistory("^GSPC", period).catch(() => []),
+      ]);
       if (history.length < 80) return { error: "INSUFFICIENT_DATA", message: "Need ≥ 80 days" };
+
+      // Align macro data to same length as stock data
+      const len = history.length;
+      const vixPrices = vixHistory.length >= len
+        ? vixHistory.slice(-len).map(h => h.close)
+        : new Array(len).fill(0);
+      const spxPrices = spxHistory.length >= len
+        ? spxHistory.slice(-len).map(h => h.close)
+        : new Array(len).fill(0);
+
       const result  = await runRScript("factor_model.R", {
         ...buildHistInput(history), lookahead, mode, train_pct,
+        vix: vixPrices,
+        spx: spxPrices,
       });
       if (result.success) { result.symbol = symbol; setCache(cacheKey, result, CACHE_TTL_ML); }
       return result;
@@ -377,13 +392,22 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
     if (!retrain) { const c = getCache<any>(cacheKey); if (c) return c; }
 
     try {
-      const history = await fetchHistory(symbol, period);
+      const [history, vixHistory, spxHistory] = await Promise.all([
+        fetchHistory(symbol, period),
+        fetchHistory("^VIX", period).catch(() => []),
+        fetchHistory("^GSPC", period).catch(() => []),
+      ]);
       if (history.length < 80) return { error: "INSUFFICIENT_DATA", message: "Need ≥ 80 days" };
       const inp = buildHistInput(history);
 
+      // Align macro data for factor model
+      const len = history.length;
+      const vixPrices = vixHistory.length >= len ? vixHistory.slice(-len).map(h => h.close) : new Array(len).fill(0);
+      const spxPrices = spxHistory.length >= len ? spxHistory.slice(-len).map(h => h.close) : new Array(len).fill(0);
+
       const [etsR, factorR, rfR, backR] = await Promise.allSettled([
         runRScript("ets_model.R",         { prices: inp.prices, dates: inp.dates, horizon: lookahead, train_pct: 0.80 }),
-        runRScript("factor_model.R",      { ...inp, lookahead, mode: "classification", train_pct: 0.75 }),
+        runRScript("factor_model.R",      { ...inp, lookahead, mode: "classification", train_pct: 0.75, vix: vixPrices, spx: spxPrices }),
         runRScript("rf_model.R",          { ...inp, lookahead, n_trees: 200, train_pct: 0.75 }),
         runRScript("enhanced_backtest.R", { ...inp, window: 20, lookahead }),
       ]);
@@ -454,24 +478,25 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
   })
 
   // ── Holt-Winters Exponential Smoothing ──────────────────────────────────
+  // HWES now redirects to ETS (Holt-Winters is a special case of ETS) — kept for backwards compatibility
   .get("/hwes/:symbol", async ({ params, query }) => {
     const symbol  = params.symbol.toUpperCase();
     const horizon = parseInt(query.horizon || "14");
     const period  = query.period || "1y";
-    const cacheKey = `hwes_${symbol}_${period}_${horizon}`;
+    const cacheKey = `ets_${symbol}_${period}_${horizon}`;
     const cached   = getCache<any>(cacheKey);
-    if (cached) return cached;
+    if (cached) return { ...cached, _note: "Consolidated: HWES now uses ETS engine (superset)" };
 
     try {
       const history = await fetchHistory(symbol, period);
       if (history.length < 40) return { error: "INSUFFICIENT_DATA", message: "Need >= 40 days" };
-      const result = await runRScript("hwes_model.R", {
-        prices: history.map(h => h.close), horizon,
+      const result = await runRScript("ets_model.R", {
+        prices: history.map(h => h.close), dates: history.map(h => h.date), horizon, train_pct: 0.80,
       });
-      if (result.success) { result.symbol = symbol; setCache(cacheKey, result, CACHE_TTL_ML); }
+      if (result.success) { result.symbol = symbol; result._note = "Consolidated: HWES now uses ETS engine (superset)"; setCache(cacheKey, result, CACHE_TTL_ML); }
       return result;
     } catch (e: any) {
-      return { error: "R_ERROR", message: e.message || "HWES failed" };
+      return { error: "R_ERROR", message: e.message || "ETS (formerly HWES) failed" };
     }
   }, { query: t.Object({ horizon: t.Optional(t.String()), period: t.Optional(t.String()) }) })
 
@@ -685,13 +710,18 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
     const symbols  = (query.symbols || "").split(",").filter(Boolean).map(s => s.trim().toUpperCase());
     const weights  = (query.weights || "").split(",").map(Number).filter(n => !isNaN(n));
     const strategy = query.strategy || "long";
+    const strategy2 = query.strategy2 || "";
     const goalReturn = parseFloat(query.goal_return || "10");
     const goalYears  = parseFloat(query.goal_years || "5");
     const initial    = parseFloat(query.initial || "10000");
     const monthly    = parseFloat(query.monthly || "0");
+    const riskTolerance = query.risk_tolerance || "Moderate";
+    const rebalance  = query.rebalance || "Quarterly";
+    const stopLoss   = parseFloat(query.stop_loss || "0");
+    const takeProfit = parseFloat(query.take_profit || "0");
 
     if (symbols.length < 1) return { error: "BAD_REQUEST", message: "Need at least 1 symbol" };
-    const cacheKey = `pstrat_${symbols.join("_")}_${strategy}_${goalReturn}_${goalYears}_${initial}_${monthly}`;
+    const cacheKey = `pstrat_${symbols.join("_")}_${strategy}_${strategy2}_${goalReturn}_${goalYears}_${initial}_${monthly}_${riskTolerance}_${rebalance}_${stopLoss}_${takeProfit}`;
     const cached = getCache<any>(cacheKey);
     if (cached) return cached;
 
@@ -713,10 +743,15 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
         symbols,
         weights: weights.length === symbols.length ? weights : symbols.map(() => 1 / symbols.length),
         strategy,
+        strategy2,
         goal_return: goalReturn,
         goal_years: goalYears,
         initial,
         monthly,
+        risk_tolerance: riskTolerance,
+        rebalance,
+        stop_loss: stopLoss,
+        take_profit: takeProfit,
       });
 
       if (result.success) setCache(cacheKey, result, CACHE_TTL_ML);
@@ -729,10 +764,15 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
       symbols: t.Optional(t.String()),
       weights: t.Optional(t.String()),
       strategy: t.Optional(t.String()),
+      strategy2: t.Optional(t.String()),
       goal_return: t.Optional(t.String()),
       goal_years: t.Optional(t.String()),
       initial: t.Optional(t.String()),
       monthly: t.Optional(t.String()),
+      risk_tolerance: t.Optional(t.String()),
+      rebalance: t.Optional(t.String()),
+      stop_loss: t.Optional(t.String()),
+      take_profit: t.Optional(t.String()),
     }),
   })
 
@@ -850,4 +890,105 @@ export const predictionRoutes = new Elysia({ prefix: "/api/predict" })
     } catch (e: any) {
       return { error: "R_ERROR", message: e.message || "Multi-model optimization failed", success: false };
     }
-  }, { query: t.Object({ symbols: t.Optional(t.String()) }) });
+  }, { query: t.Object({ symbols: t.Optional(t.String()) }) })
+
+  /* ── Model Accuracy Leaderboard ─────────────────────────────────────── */
+  .get("/accuracy/:symbol", async ({ params, query }) => {
+    const symbol = params.symbol.toUpperCase();
+    const period = query.period || "2y";
+    const lookahead = parseInt(query.lookahead || "10");
+    const cacheKey = `accuracy_${symbol}_${period}_${lookahead}`;
+    const cached = getCache<any>(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const [history, vixHistory, spxHistory] = await Promise.all([
+        fetchHistory(symbol, period),
+        fetchHistory("^VIX", period).catch(() => []),
+        fetchHistory("^GSPC", period).catch(() => []),
+      ]);
+      if (history.length < 80) return { error: "INSUFFICIENT_DATA", message: "Need >= 80 days" };
+      const inp = buildHistInput(history);
+      const len = history.length;
+      const vixPrices = vixHistory.length >= len ? vixHistory.slice(-len).map(h => h.close) : new Array(len).fill(0);
+      const spxPrices = spxHistory.length >= len ? spxHistory.slice(-len).map(h => h.close) : new Array(len).fill(0);
+
+      // Run all models in parallel
+      const [etsR, factorR, rfR, backtestR, bayesR, garchR] = await Promise.allSettled([
+        runRScript("ets_model.R",          { prices: inp.prices, dates: inp.dates, horizon: lookahead, train_pct: 0.80 }),
+        runRScript("factor_model.R",       { ...inp, lookahead, mode: "classification", train_pct: 0.75, vix: vixPrices, spx: spxPrices }),
+        runRScript("rf_model.R",           { ...inp, lookahead, n_trees: 200, train_pct: 0.75 }),
+        runRScript("enhanced_backtest.R",  { ...inp, window: 20, lookahead }),
+        runRScript("bayesian_model.R",     { prices: inp.prices, dates: inp.dates, horizon: lookahead }),
+        runRScript("garch_forecast.R",     { prices: inp.prices, dates: inp.dates, horizon: lookahead }),
+      ]);
+
+      const extractAccuracy = (r: PromiseSettledResult<any>, name: string, type: string) => {
+        if (r.status === "rejected" || !r.value?.success) {
+          return { name, type, status: "failed", error: r.status === "rejected" ? r.reason?.message : r.value?.error };
+        }
+        const v = r.value;
+        return {
+          name,
+          type,
+          status: "ok",
+          direction: v.prediction?.next_direction || v.summary?.directional_bias || "N/A",
+          dir_accuracy: v.walk_forward?.dir_accuracy ?? v.performance?.dir_accuracy ?? null,
+          skill_score: v.walk_forward?.skill_score ?? v.performance?.skill_score ?? null,
+          rmse: v.walk_forward?.rmse ?? v.performance?.oos_rmse ?? null,
+          n_steps: v.walk_forward?.n_steps ?? null,
+          confidence: v.prediction?.confidence ?? v.summary?.confidence_score ?? null,
+          prob_up: v.prediction?.probability_up ?? null,
+          interpretation: v.walk_forward?.interpretation ?? v.performance?.interpretation ?? "",
+        };
+      };
+
+      const models = [
+        extractAccuracy(etsR,      "ETS/ARIMA",         "time-series"),
+        extractAccuracy(factorR,   "Multi-Factor+Macro","ml"),
+        extractAccuracy(rfR,       "Random Forest",     "ml"),
+        extractAccuracy(backtestR, "Pattern Backtest",  "pattern"),
+        extractAccuracy(bayesR,    "Bayesian",          "probabilistic"),
+        extractAccuracy(garchR,    "GARCH Volatility",  "volatility"),
+      ];
+
+      // Rank by accuracy
+      const ranked = models
+        .filter(m => m.status === "ok" && m.dir_accuracy !== null)
+        .sort((a, b) => (b.dir_accuracy ?? 0) - (a.dir_accuracy ?? 0))
+        .map((m, i) => ({ ...m, rank: i + 1 }));
+
+      // Best model consensus
+      const top3 = ranked.slice(0, 3);
+      const bullish = top3.filter(m => m.direction?.toLowerCase().includes("up") || m.direction?.toLowerCase().includes("bull")).length;
+      const bearish = top3.filter(m => m.direction?.toLowerCase().includes("down") || m.direction?.toLowerCase().includes("bear")).length;
+
+      const result = {
+        symbol,
+        period,
+        lookahead,
+        dataPoints: history.length,
+        lastPrice: inp.prices[inp.prices.length - 1],
+        leaderboard: ranked,
+        failed: models.filter(m => m.status === "failed"),
+        top3_consensus: {
+          direction: bullish >= bearish ? "Bullish" : "Bearish",
+          bullish_count: bullish,
+          bearish_count: bearish,
+          avg_accuracy: top3.length > 0 ? Math.round(top3.reduce((s, m) => s + (m.dir_accuracy ?? 0), 0) / top3.length * 10) / 10 : null,
+          avg_skill: top3.length > 0 ? Math.round(top3.reduce((s, m) => s + (m.skill_score ?? 0), 0) / top3.length * 10) / 10 : null,
+        },
+        note: "Models ranked by walk-forward directional accuracy. Skill score = accuracy above naive baseline (always predict up). Higher skill = more predictive value.",
+      };
+
+      setCache(cacheKey, result, CACHE_TTL_ML);
+      return result;
+    } catch (e: any) {
+      return { error: "R_ERROR", message: e.message || "Accuracy tracking failed" };
+    }
+  }, {
+    query: t.Object({
+      period: t.Optional(t.String()),
+      lookahead: t.Optional(t.String()),
+    }),
+  });
